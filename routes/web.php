@@ -5,7 +5,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('CheckOut.pembayaran_berhasil');
 });
 
 Route::get('/home', [ProductController::class, 'home'])->name('home');
