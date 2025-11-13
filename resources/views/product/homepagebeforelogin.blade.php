@@ -47,7 +47,7 @@
 
     <main>
     <!-- HERO (compact) -->
-    <section class="min-h-[56vh] md:min-h-[64vh] bg-gradient-to-br from-pink-50 via-pink-100 to-white flex items-center">
+    <section class="min-h-[56vh] md:min-h-[64vh] bg-linear-to-br from-pink-50 via-pink-100 to-white flex items-center">
       <div class="container mx-auto px-4 max-w-6xl">
         <div class="grid lg:grid-cols-2 gap-8 items-center">
           <div class="space-y-6">
@@ -68,7 +68,7 @@
           <div class="relative">
             <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden">
               <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Wedding Dress" class="w-full h-80 md:h-88 object-cover">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              <div class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
             </div>
             <div class="absolute -top-3 -right-3 w-20 h-20 bg-pink-100 rounded-full opacity-60"></div>
             <div class="absolute -bottom-3 -left-3 w-14 h-14 bg-yellow-100 rounded-full opacity-60"></div>
@@ -149,7 +149,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5">
           <!-- Card 1 -->
           <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="aspect-[3/2] overflow-hidden">
+            <div class="aspect-3/2 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&w=800&q=80" alt="Gaun Pengantin Mewah Collection" class="w-full h-full object-cover">
             </div>
             <div class="p-3">
@@ -166,7 +166,7 @@
 
           <!-- Card 2 -->
           <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="aspect-[3/2] overflow-hidden">
+            <div class="aspect-3/2 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Cincin Kawin Emas 18K" class="w-full h-full object-cover" referrerpolicy="no-referrer">
             </div>
             <div class="p-3">
@@ -183,7 +183,7 @@
 
           <!-- Card 3 -->
           <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="aspect-[3/2] overflow-hidden">
+            <div class="aspect-3/2 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80" alt="Paket Dekorasi Pelaminan Premium" class="w-full h-full object-cover">
             </div>
             <div class="p-3">
@@ -200,7 +200,7 @@
 
           <!-- Card 4 -->
           <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="aspect-[3/2] overflow-hidden">
+            <div class="aspect-3/2 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80" alt="Paket Fotografi Wedding Premium" class="w-full h-full object-cover">
             </div>
             <div class="p-3">
@@ -217,7 +217,7 @@
 
           <!-- Card 5 -->
           <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="aspect-[3/2] overflow-hidden">
+            <div class="aspect-3/2 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=800&q=80" alt="Paket Venue Romantis Tepi Kolam" class="w-full h-full object-cover">
             </div>
             <div class="p-3">
@@ -234,7 +234,7 @@
 
           <!-- Card 6 -->
           <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="aspect-[3/2] overflow-hidden">
+            <div class="aspect-3/2 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Paket Katering Premium" class="w-full h-full object-cover">
             </div>
             <div class="p-3">

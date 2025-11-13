@@ -282,7 +282,7 @@
         
         {{-- Card 1 --}}
         <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-3/2 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&w=800&q=80" alt="Gaun Pengantin Mewah Collection" class="w-full h-full object-cover">
           </div>
           <div class="p-3">
@@ -299,7 +299,7 @@
 
         {{-- Card 2 --}}
         <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-3/2 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Cincin Kawin Emas 18K" class="w-full h-full object-cover" referrerpolicy="no-referrer">
           </div>
           <div class="p-3">
@@ -316,7 +316,7 @@
 
         {{-- Card 3 --}}
         <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-3/2 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80" alt="Paket Dekorasi Pelaminan Premium" class="w-full h-full object-cover">
           </div>
           <div class="p-3">
@@ -333,7 +333,7 @@
 
         {{-- Card 4 --}}
         <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-3/2 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80" alt="Paket Fotografi Wedding Premium" class="w-full h-full object-cover">
           </div>
           <div class="p-3">
@@ -350,7 +350,7 @@
 
         {{-- Card 5 --}}
         <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-3/2 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=800&q=80" alt="Paket Venue Romantis Tepi Kolam" class="w-full h-full object-cover">
           </div>
           <div class="p-3">
@@ -367,7 +367,7 @@
 
         {{-- Card 6 --}}
         <article class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-3/2 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Paket Katering Premium" class="w-full h-full object-cover">
           </div>
           <div class="p-3">

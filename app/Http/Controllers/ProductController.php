@@ -2,19 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected ProductRepositoryInterface $productRepository;
+
+    public function __construct(
+        ProductRepositoryInterface $productRepository
+    ) {
+        $this->productRepository = $productRepository;
+    }
+
+    public function home()
+    {
+        return view('product.homepageafterlogin');
+    }
+
+
     public function index()
     {
-        $products = Product::latest()->get();
-        return view('vendor.kelola_produk', compact('products'));
+        $products = $this->productRepository->getAll();
+        $categories = Category::all();
+        return view('product.daftarproduct', compact('products', 'categories'));
     }
 
     /**
@@ -80,7 +94,7 @@ class ProductController extends Controller
         if ($product->facilities) {
             $product->facilities = json_decode($product->facilities, true);
         }
-        
+
         return view('auth.edit_produk', compact('product'));
     }
 
@@ -107,7 +121,7 @@ class ProductController extends Controller
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-            
+
             $imagePath = $request->file('image')->store('products', 'public');
             $validated['image'] = $imagePath;
         }
@@ -136,11 +150,37 @@ class ProductController extends Controller
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
-        
+
         $product->delete();
 
         return redirect()
             ->route('vendor.kelola_produk')
             ->with('success', 'Produk berhasil dihapus!');
+    }
+
+    public function search(Request $request)
+    {
+        $products = $this->productRepository->getProductBySearch($request->input('search'));
+        $categories = Category::all();
+        return view('product.daftarproductfilter', compact('products', 'categories'));
+    }
+
+    public function filter(Request $request)
+    {
+        $filterData = [
+            'kategori' => $request->input('kategori'),
+            'lokasi' => $request->input('lokasi'),
+            'min_price' => $request->input('min_price'),
+            'max_price' => $request->input('max_price'),
+        ];
+
+        $products = $this->productRepository->getProductByFilter($filterData);
+        $categories = Category::all();
+        return view('product.daftarproductfilter', compact('products', 'categories'));
+    }
+
+    public function cart()
+    {
+        //
     }
 }
