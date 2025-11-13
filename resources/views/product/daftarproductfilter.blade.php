@@ -159,43 +159,72 @@
                 <div>
                     {{-- Page Header --}}
                     <div class="mb-5">
-                        <h1 class="text-xl font-bold text-gray-900 mb-0.5">Semua Produk Wedding</h1>
-                        <p class="text-xs text-gray-600">Temukan vendor dan produk terbaik untuk pernikahan impian Anda</p>
+                        <h1 class="text-xl font-bold text-gray-900 mb-0.5">
+                            @if (request('search'))
+                                Hasil Pencarian: "{{ request('search') }}"
+                            @else
+                                Produk Wedding - Hasil Filter
+                            @endif
+                        </h1>
+                        <p class="text-xs text-gray-600">
+                            Ditemukan {{ $products->count() }} produk
+                        </p>
                     </div>
 
                     {{-- Product Grid - 4 Kolom dengan proporsi pas --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                        {{-- Product Card 1 --}}
-
-                        @foreach ($products as $product)
-                            <article
-                                class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                                <div class="aspect-4/3 overflow-hidden">
-                                    <img src="{{ asset('storage/' . $product->images->first()->image) }}"
-                                        alt="Paket Dekorasi Pelaminan Premium"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                </div>
-                                <div class="p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="inline-flex items-center gap-1 text-xs font-medium text-yellow-600">
-                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                            </svg>
-                                            {{ $product->avg_rating }}
-                                        </span>
-                                        <span class="text-xs text-gray-500">(73)</span>
+                    @if ($products->count() > 0)
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                            @foreach ($products as $product)
+                                <article
+                                    class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                                    <div class="aspect-4/3 overflow-hidden">
+                                        @if ($product->images && $product->images->first())
+                                            <img src="{{ asset('storage/' . $product->images->first()->image) }}"
+                                                alt="{{ $product->name }}"
+                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        @else
+                                            <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                                <span class="text-gray-400">No Image</span>
+                                            </div>
+                                        @endif
                                     </div>
-                                    <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2">
-                                        {{ $product->name }}</h3>
-                                    <p class="text-xs text-gray-500 mb-3">📍 {{ $product->vendor->address }}</p>
-                                    <div class="text-pink-600 font-bold text-base">Rp
-                                        {{ number_format($product->price, 0, ',', '.') }}</div>
-                                </div>
-                            </article>
-                        @endforeach
-
-                    </div>
+                                    <div class="p-4">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span
+                                                class="inline-flex items-center gap-1 text-xs font-medium text-yellow-600">
+                                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
+                                                </svg>
+                                                {{ $product->avg_rating ?? '0.0' }}
+                                            </span>
+                                            <span class="text-xs text-gray-500">({{ $product->total_review ?? 0 }})</span>
+                                        </div>
+                                        <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2">
+                                            {{ $product->name }}</h3>
+                                        <p class="text-xs text-gray-500 mb-3">📍
+                                            {{ $product->vendor->address ?? 'Lokasi tidak tersedia' }}</p>
+                                        <div class="text-pink-600 font-bold text-base">Rp
+                                            {{ number_format($product->price, 0, ',', '.') }}</div>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="bg-white rounded-xl p-12 text-center shadow-sm">
+                            <svg class="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Tidak ada produk ditemukan</h3>
+                            <p class="text-sm text-gray-600 mb-4">Coba ubah filter atau kata kunci pencarian Anda</p>
+                            <a href="{{ route('product') }}"
+                                class="inline-block px-6 py-2.5 bg-pink-600 hover:bg-pink-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                Lihat Semua Produk
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </main>

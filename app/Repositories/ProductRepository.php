@@ -18,7 +18,8 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getAll()
     {
-        return $this->product->get();
+
+        return $this->product->with('images')->get();
     }
 
     public function getById($id)
@@ -45,28 +46,28 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getProductBySearch($search)
     {
-        return $this->product->where('name', 'like', '%' . $search . '%')->get();
+        return $this->product->where('name', 'like', '%' . $search . '%')->with('images')->get();
     }
 
     public function getProductByFilter($filter)
     {
-        $query = $this->product->where('is_active', true);
+        $query = $this->product->query()->with(['images', 'vendor']);
 
-        if ($filter['kategori']) {
+        if (!empty($filter['kategori'])) {
             $query->where('category_id', $filter['kategori']);
         }
 
-        if ($filter['lokasi']) {
+        if (!empty($filter['lokasi'])) {
             $query->whereHas('vendor', function ($q) use ($filter) {
-                $q->where('address', $filter['lokasi']);
+                $q->where('address', 'like', '%' . $filter['lokasi'] . '%');
             });
         }
 
-        if ($filter['min_price']) {
+        if (!empty($filter['min_price'])) {
             $query->where('price', '>=', $filter['min_price']);
         }
 
-        if ($filter['max_price']) {
+        if (!empty($filter['max_price'])) {
             $query->where('price', '<=', $filter['max_price']);
         }
 
