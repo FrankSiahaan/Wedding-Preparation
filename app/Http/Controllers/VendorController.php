@@ -8,58 +8,50 @@ use Illuminate\Http\Request;
 class VendorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display vendor store page with products
      */
-    public function index()
+    public function show($id)
     {
-        //
-    }
+        $vendor = Vendor::with(['products' => function ($query) {
+            $query->with('images')->where('is_active', true);
+        }])->findOrFail($id);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        // Calculate vendor stats
+        $totalProducts = $vendor->products->count();
+        $totalSold = $vendor->products->sum('total_sold');
+        $avgRating = $vendor->products->avg('avg_rating');
+        $totalReviews = $vendor->products->sum('total_review');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Get products with sorting
+        $sortBy = request('sort', 'newest');
+        $products = $vendor->products()->with('images');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vendor $vendor)
-    {
-        //
-    }
+        switch ($sortBy) {
+            case 'price_low':
+                $products = $products->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $products = $products->orderBy('price', 'desc');
+                break;
+            case 'best_seller':
+                $products = $products->orderBy('total_sold', 'desc');
+                break;
+            case 'rating':
+                $products = $products->orderBy('avg_rating', 'desc');
+                break;
+            default:
+                $products = $products->orderBy('created_at', 'desc');
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Vendor $vendor)
-    {
-        //
-    }
+        $products = $products->paginate(12);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Vendor $vendor)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Vendor $vendor)
-    {
-        //
+        return view('product.kunjungitoko', compact(
+            'vendor',
+            'products',
+            'totalProducts',
+            'totalSold',
+            'avgRating',
+            'totalReviews'
+        ));
     }
 }

@@ -16,10 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->decimal('price', 12, 2);
+            $table->integer('stock')->default(0);
+            $table->string('image')->nullable();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
-            $table->boolean('is_active');
-            $table->integer('total_review');
+            $table->boolean('is_active')->default(true);
+            $table->integer('total_review')->default(0);
             $table->float('avg_rating')->nullable();
             $table->timestamps();
         });

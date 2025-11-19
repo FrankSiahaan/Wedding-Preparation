@@ -9,9 +9,13 @@ class Address extends Model
     protected $fillable = [
         'user_id',
         'recipient_name',
+        'phone',
+        'address',
         'street',
         'city',
-        'postal_code'
+        'province',
+        'postal_code',
+        'is_default'
     ];
 
     public function user()
