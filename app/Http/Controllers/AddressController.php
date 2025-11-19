@@ -4,62 +4,81 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function setPrimary($id)
     {
-        //
+        $user = Auth::user();
+
+        // Reset semua alamat user menjadi non-primary
+        $user->addresses()->update(['is_primary' => false]);
+
+        // Set alamat yang dipilih menjadi primary
+        $address = $user->addresses()->findOrFail($id);
+        $address->update(['is_primary' => true]);
+
+        return redirect()->route('user.addresses')->with('success', 'Alamat utama berhasil diubah');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function destroy($id)
     {
-        //
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+
+        // Cegah penghapusan alamat utama
+        if ($address->is_primary) {
+            return redirect()->route('user.addresses')->with('error', 'Alamat utama tidak dapat dihapus');
+        }
+
+        $address->delete();
+
+        return redirect()->route('user.addresses')->with('success', 'Alamat berhasil dihapus');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'recipient_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address_line1' => 'required|string',
+            'address_line2' => 'nullable|string',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:10',
+            'is_primary' => 'boolean'
+        ]);
+
+        $user = Auth::user();
+
+        // Jika ini alamat pertama atau set sebagai primary
+        if ($user->addresses()->count() === 0 || ($request->is_primary ?? false)) {
+            $user->addresses()->update(['is_primary' => false]);
+            $validated['is_primary'] = true;
+        }
+
+        $user->addresses()->create($validated);
+
+        return redirect()->route('user.addresses')->with('success', 'Alamat berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Address $address)
+    public function update(Request $request, $id)
     {
-        //
-    }
+        $validated = $request->validate([
+            'recipient_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address_line1' => 'required|string',
+            'address_line2' => 'nullable|string',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:10',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Address $address)
-    {
-        //
-    }
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+        $address->update($validated);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Address $address)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Address $address)
-    {
-        //
+        return redirect()->route('user.addresses')->with('success', 'Alamat berhasil diupdate');
     }
 }

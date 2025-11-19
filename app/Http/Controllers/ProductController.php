@@ -183,4 +183,10 @@ class ProductController extends Controller
     {
         //
     }
+
+    public function detail(Request $request)
+    {
+        $detail = $this->productRepository->getDetailProductById($request->id);
+        return view('product.detailproduct', compact('detail'));
+    }
 }

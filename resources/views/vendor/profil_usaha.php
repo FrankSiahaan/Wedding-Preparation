@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-50">
-    
+
     <div class="flex min-h-screen">
-        
+
         <!-- Sidebar -->
         <aside class="w-64 bg-white shadow-md fixed h-full">
-            
+
             <!-- Logo & Brand -->
             <div class="p-6 border-b border-gray-200">
                 <div class="flex items-center space-x-3">
@@ -72,7 +74,7 @@
                         <i class="fas fa-user text-pink-500"></i>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-white">Sari Dewi</p>
+                        <p class="text-sm font-medium text-white"><?php echo auth()->user()->name; ?></p>
                         <p class="text-xs text-pink-100">Venue</p>
                     </div>
                 </div>
@@ -81,7 +83,7 @@
 
         <!-- Main Content -->
         <main class="flex-1 ml-64">
-            
+
             <!-- Top Bar -->
             <header class="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
                 <div class="flex items-center justify-between px-8 py-4">
@@ -100,7 +102,7 @@
 
             <!-- Content Area -->
             <div class="p-8">
-                
+
                 <!-- Profile Form -->
                 <div class="bg-white rounded-xl shadow-sm p-8">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">Informasi Usaha</h3>
@@ -120,11 +122,11 @@
 
                     <!-- Form Fields -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
+
                         <!-- Nama Usaha -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Usaha</label>
-                            <input type="text" value="Sari Dewi" class="w-full px-4 py-3 bg-pink-50 border border-pink-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-700">
+                            <input type="text" value="<?php echo auth()->user()->name; ?>" class="w-full px-4 py-3 bg-pink-50 border border-pink-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-700">
                         </div>
 
                         <!-- Kategori -->
@@ -178,4 +180,5 @@
     </div>
 
 </body>
+
 </html>

@@ -5,7 +5,7 @@
     <body class="min-h-dvh bg-gray-50 text-gray-900 font-sans">
 
         {{-- HEADER --}}
-        <header class="bg-white">
+        <header class="bg-white sticky top-0 z-50 border-b border-gray-100">
             <div class="container mx-auto px-4 max-w-6xl">
                 <nav class="flex items-center justify-between h-14">
                     {{-- Logo --}}
@@ -42,15 +42,7 @@
 
                     {{-- Actions --}}
                     <div class="flex items-center gap-3">
-                        <button
-                            class="hidden sm:grid place-items-center w-8 h-8 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50">
-                            <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.6">
-                                <path
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                        </button>
-                        <button
+                        <a href="{{ route('cart.index') }}"
                             class="grid place-items-center w-8 h-8 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50">
                             <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="1.6">
@@ -59,9 +51,9 @@
                                 <circle cx="9.5" cy="20" r="1.4" />
                                 <circle cx="17.5" cy="20" r="1.4" />
                             </svg>
-                        </button>
-                        <a href="#"
-                            class="hidden sm:flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-pink-100 bg-pink-50/60">
+                        </a>
+                        <a href="{{ route('user.profile') }}"
+                            class="hidden sm:flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-pink-100 bg-pink-50/60 hover:bg-pink-100/80 transition-colors">
                             <span class="grid place-items-center w-6.5 h-6.5 rounded-full bg-pink-100 text-pink-700">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="1.6">
@@ -69,7 +61,7 @@
                                     <path d="M4 20a8 8 0 0 1 16 0" />
                                 </svg>
                             </span>
-                            <span class="text-[13px] text-gray-700">Sari Dewi</span>
+                            <span class="text-[13px] text-gray-700">{{ auth()->user()->name }}</span>
                         </a>
                     </div>
                 </nav>
@@ -170,28 +162,31 @@
                         @foreach ($products as $product)
                             <article
                                 class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                                <div class="aspect-4/3 overflow-hidden">
-                                    <img src="{{ asset('storage/' . $product->images->first()->image) }}"
-                                        alt="Paket Dekorasi Pelaminan Premium"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                </div>
-                                <div class="p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="inline-flex items-center gap-1 text-xs font-medium text-yellow-600">
-                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                            </svg>
-                                            {{ $product->avg_rating }}
-                                        </span>
-                                        <span class="text-xs text-gray-500">(73)</span>
+                                <a href="{{ route('product.detail', $product->id) }}">
+                                    <div class="aspect-4/3 overflow-hidden">
+                                        <img src="{{ asset('storage/' . $product->images->first()->image) }}"
+                                            alt="Paket Dekorasi Pelaminan Premium"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     </div>
-                                    <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2">
-                                        {{ $product->name }}</h3>
-                                    <p class="text-xs text-gray-500 mb-3">📍 {{ $product->vendor->address }}</p>
-                                    <div class="text-pink-600 font-bold text-base">Rp
-                                        {{ number_format($product->price, 0, ',', '.') }}</div>
-                                </div>
+                                    <div class="p-4">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span
+                                                class="inline-flex items-center gap-1 text-xs font-medium text-yellow-600">
+                                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
+                                                </svg>
+                                                {{ $product->avg_rating }}
+                                            </span>
+                                            <span class="text-xs text-gray-500">(73)</span>
+                                        </div>
+                                        <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2">
+                                            {{ $product->name }}</h3>
+                                        <p class="text-xs text-gray-500 mb-3">📍 {{ $product->vendor->address }}</p>
+                                        <div class="text-pink-600 font-bold text-base">Rp
+                                            {{ number_format($product->price, 0, ',', '.') }}</div>
+                                    </div>
+                                </a>
                             </article>
                         @endforeach
 

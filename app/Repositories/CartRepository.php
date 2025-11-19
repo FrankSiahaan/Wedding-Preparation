@@ -20,7 +20,7 @@ class CartRepository implements CartRepositoryInterface
 
     public function getUserCart($id)
     {
-        return $this->cart->where('user_id', $id)->with(['cartitems.product.images', 'cartitem.variant'])->first();
+        return $this->cart->where('user_id', $id)->with(['cartitems.product.images', 'cartitems.variant'])->first();
     }
 
     public function getOrCreateCart($id)
@@ -74,7 +74,7 @@ class CartRepository implements CartRepositoryInterface
             return 0;
         }
 
-        return $cart->cartItems()->sum('subtotal');
+        return $cart->cartitems()->sum('subtotal');
     }
 
     public function updateItemQuantity($cartItemId, $quantity)
