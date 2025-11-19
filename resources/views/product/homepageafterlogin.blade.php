@@ -5,7 +5,7 @@
     <body class="min-h-dvh bg-gray-50 text-gray-900 font-sans">
 
         <!-- HEADER (compact) -->
-        <header class="bg-white">
+        <header class="bg-white sticky top-0 z-50 border-b border-gray-100">
             <div class="container mx-auto px-4 max-w-6xl">
                 <nav class="flex items-center justify-between h-14">
                     <!-- Logo -->
@@ -38,14 +38,7 @@
 
                     <!-- Actions -->
                     <div class="flex items-center gap-3">
-                        <button
-                            class="hidden sm:grid place-items-center w-8 h-8 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50">
-                            <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.6">
-                                <path d="M3 7l9 4 9-4M3 7l9-4 9 4M3 7v10l9 4 9-4V7" />
-                            </svg>
-                        </button>
-                        <button
+                        <a href="{{ route('cart.index') }}"
                             class="grid place-items-center w-8 h-8 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50">
                             <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="1.6">
@@ -54,9 +47,9 @@
                                 <circle cx="9.5" cy="20" r="1.4" />
                                 <circle cx="17.5" cy="20" r="1.4" />
                             </svg>
-                        </button>
-                        <a href="#"
-                            class="hidden sm:flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-pink-100 bg-pink-50/60">
+                        </a>
+                        <a href="{{ route('user.profile') }}"
+                            class="hidden sm:flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-pink-100 bg-pink-50/60 hover:bg-pink-100/80 transition-colors">
                             <span class="grid place-items-center w-6.5 h-6.5 rounded-full bg-pink-100 text-pink-700">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="1.6">
@@ -64,19 +57,11 @@
                                     <path d="M4 20a8 8 0 0 1 16 0" />
                                 </svg>
                             </span>
-                            <span class="text-[13px] text-gray-700">{{ auth()->name() }}</span>
+                            <span class="text-[13px] text-gray-700">{{ auth()->user()->name }}</span>
                         </a>
-                        <button
-                            class="md:hidden grid place-items-center w-8 h-8 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50">
-                            <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
                     </div>
                 </nav>
             </div>
-            <div class="border-t border-pink-100/70"></div>
         </header>
 
         <main>
@@ -142,8 +127,7 @@
                         <div class="text-center group cursor-pointer">
                             <div
                                 class="w-14 h-14 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

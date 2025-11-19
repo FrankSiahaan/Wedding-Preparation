@@ -62,7 +62,7 @@
                     <label for="email" class="block text-sm font-semibold text-gray-900 mb-2">Email</label>
                     <input id="email" name="email" type="email" required placeholder="Masukkan email Anda"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 text-sm placeholder-gray-400 transition-colors"
-                        {{ old('email') }} />
+                        value="{{ old('email') }}" />
                     @error('email')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror

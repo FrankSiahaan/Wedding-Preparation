@@ -39,4 +39,47 @@ class UserController extends Controller
     {
         return view('auth.register');
     }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('user.profile', compact('user'));
+    }
+
+    public function editProfile()
+    {
+        $user = Auth::user();
+        return view('user.edit_profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20'
+        ]);
+
+        $user->update($validated);
+
+        return redirect()->route('user.profile')->with('success', 'Profile berhasil diupdate');
+    }
+
+    public function addresses()
+    {
+        $user = Auth::user();
+        $addresses = $user->addresses;
+        return view('user.addresses', compact('addresses'));
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
 }

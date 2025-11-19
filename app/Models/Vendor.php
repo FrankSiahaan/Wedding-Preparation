@@ -10,8 +10,10 @@ class Vendor extends Model
         'user_id',
         'name',
         'email',
+        'phone',
         'address',
-        'description'
+        'description',
+        'logo'
     ];
 
     public function user()
