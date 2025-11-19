@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-50">
-    
+
     <div class="flex min-h-screen">
-        
+
         <!-- Sidebar -->
         <aside class="w-64 bg-white shadow-md fixed h-full">
-            
+
             <!-- Logo & Brand -->
             <div class="p-6 border-b border-gray-200">
                 <div class="flex items-center space-x-3">
@@ -72,7 +74,7 @@
                         <i class="fas fa-user text-pink-500"></i>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-white">Sari Dewi</p>
+                        <p class="text-sm font-medium text-white"><?php echo auth()->user()->name; ?></p>
                         <p class="text-xs text-pink-100">Venue</p>
                     </div>
                 </div>
@@ -81,7 +83,7 @@
 
         <!-- Main Content -->
         <main class="flex-1 ml-64">
-            
+
             <!-- Top Bar -->
             <header class="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
                 <div class="flex items-center justify-between px-8 py-4">
@@ -100,7 +102,7 @@
 
             <!-- Content Area -->
             <div class="p-8">
-                
+
                 <!-- Action Button -->
                 <div class="flex justify-end mb-6">
                     <button class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2.5 rounded-lg font-medium shadow-md transition flex items-center space-x-2">
@@ -111,7 +113,7 @@
 
                 <!-- Products Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    
+
                     <!-- Product Card 1 -->
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
                         <div class="relative">
@@ -126,7 +128,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 leading-relaxed h-10">Ballroom mewah dengan kapasitas 500 tamu. Dilengkapi dengan crystal...</p>
                             </div>
-                            
+
                             <!-- Stats -->
                             <div class="flex items-center space-x-3 text-sm text-gray-600 mb-4">
                                 <div class="flex items-center space-x-1">
@@ -175,7 +177,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 leading-relaxed h-10">Venue outdoor dengan taman yang indah. Cocok untuk wedding intimate...</p>
                             </div>
-                            
+
                             <!-- Stats -->
                             <div class="flex items-center space-x-3 text-sm text-gray-600 mb-4">
                                 <div class="flex items-center space-x-1">
@@ -223,7 +225,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 leading-relaxed h-10">Venue rooftop dengan pemandangan sunset yang mempesona, kapasitas 15...</p>
                             </div>
-                            
+
                             <!-- Stats -->
                             <div class="flex items-center space-x-3 text-sm text-gray-600 mb-4">
                                 <div class="flex items-center space-x-1">
@@ -271,7 +273,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 leading-relaxed h-10">Venue pantai dengan pemandangan laut yang menawan. Kapasitas 200 tamu...</p>
                             </div>
-                            
+
                             <!-- Stats -->
                             <div class="flex items-center space-x-3 text-sm text-gray-600 mb-4">
                                 <div class="flex items-center space-x-1">
@@ -314,4 +316,5 @@
     </div>
 
 </body>
+
 </html>

@@ -29,14 +29,14 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getDetailProductById($id)
     {
-        return $this->product->where('is_active', true)->with([
+        return $this->product->with([
             'vendor',
             'category',
             'variants.attributeValues.attribute',
             'images',
             'reviews.user',
             'attributes.values'
-        ])->findOrFail($id)->get();
+        ])->findOrFail($id);
     }
 
     public function getProductByVendor($vendorId)
