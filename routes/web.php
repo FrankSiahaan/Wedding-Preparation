@@ -38,6 +38,7 @@ Route::middleware(['auth', 'vendor'])->prefix('vendor')->group(function () {
     Route::get('/products/{id}/edit', [VendorController::class, 'editProduct'])->name('vendor.products.edit');
     Route::put('/products/{id}', [VendorController::class, 'updateProduct'])->name('vendor.products.update');
     Route::delete('/products/{id}', [VendorController::class, 'deleteProduct'])->name('vendor.products.delete');
+    Route::delete('/products/images/{id}', [VendorController::class, 'deleteProductImage'])->name('vendor.products.image.delete');
 
     // Profile Management
     Route::get('/profile', [VendorController::class, 'profile'])->name('vendor.profile');

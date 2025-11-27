@@ -42,12 +42,15 @@
     {{-- Flash Message --}}
     <div id="flashMessage" class="hidden fixed top-4 right-4 z-[9999]">
         <div
-            class="bg-green-100 text-green-800 px-4 py-3 rounded-lg shadow-md flash-message flex items-center gap-2 max-w-sm">
-            <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="bg-green-100 text-green-800 px-3 py-2 rounded-lg shadow-md flash-message flex items-center gap-2 max-w-xs">
+            <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            <span class="text-sm font-medium" id="flashMessageText">Barang berhasil ditambahkan ke keranjang!</span>
-            <button onclick="hideFlashMessage()" class="text-green-600 hover:text-green-800 ml-2 shrink-0">
+            <span class="text-xs font-medium" id="flashMessageText">Berhasil ditambahkan ke keranjang!</span>
+            <button onclick="hideFlashMessage()" class="text-green-600 hover:text-green-800 ml-1 shrink-0">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
             </button>
         </div>
     </div>
@@ -286,7 +289,8 @@
                                     <select name="attribute_{{ $attribute->id }}"
                                         id="attribute_{{ $attribute->id }}"
                                         class="product-attribute w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                        data-attribute-name="{{ $attribute->name }}">
+                                        data-attribute-name="{{ $attribute->name }}"
+                                        data-attribute-id="{{ $attribute->id }}">
                                         <option value="">Pilih {{ strtolower($attribute->name) }}</option>
                                         @foreach ($attribute->values as $value)
                                             <option value="{{ $value->id }}">{{ $value->value }}</option>
@@ -299,28 +303,15 @@
                                 class="hidden mb-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1.5">
                             </div>
                         @else
-                            {{-- Fallback jika tidak ada attributes --}}
-                            <div class="mb-2">
-                                <label class="block text-[10px] font-semibold text-gray-900 mb-1">Pilih Ukuran</label>
-                                <select
-                                    class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
-                                    <option>Pilih ukuran</option>
-                                    <option>S</option>
-                                    <option>M</option>
-                                    <option>L</option>
-                                    <option>XL</option>
-                                </select>
-                            </div>
-                            <div class="mb-2">
-                                <label class="block text-[10px] font-semibold text-gray-900 mb-1">Pilih Warna</label>
-                                <select
-                                    class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
-                                    <option>Pilih warna</option>
-                                    <option>Putih Gading</option>
-                                    <option>Putih Murni</option>
-                                    <option>Champagne</option>
-                                    <option>Krem</option>
-                                </select>
+                            {{-- Info jika tidak ada varian --}}
+                            <div
+                                class="mb-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                                <svg class="w-4 h-4 inline-block mr-1 text-gray-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Produk ini tidak memiliki pilihan varian
                             </div>
                         @endif
 
@@ -355,6 +346,8 @@
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $detail->id }}">
                                 <input type="hidden" name="quantity" id="quantity_hidden" value="1">
+                                {{-- Hidden inputs for selected attributes will be added dynamically --}}
+                                <div id="selectedAttributesContainer"></div>
 
                                 <button type="submit" style="display: none;" id="addToCartSubmit"></button>
                             </form>
@@ -364,6 +357,8 @@
                                 <input type="hidden" name="buy_now" value="1">
                                 <input type="hidden" name="product_id" value="{{ $detail->id }}">
                                 <input type="hidden" name="quantity" id="quantity_hidden_buy" value="1">
+                                {{-- Hidden inputs for selected attributes will be added dynamically --}}
+                                <div id="selectedAttributesContainerBuy"></div>
                             </form>
 
                             <div class="flex gap-2 mb-2">
@@ -716,6 +711,7 @@
             }
 
             syncQuantity();
+            updateSelectedAttributes();
 
             const addToCartBtn = document.getElementById('addToCartBtn');
             const addToCartText = document.getElementById('addToCartText');
@@ -786,10 +782,50 @@
             }
 
             syncQuantity();
+            updateSelectedAttributes();
             const form = document.getElementById('buyNowForm');
             if (form) {
                 form.submit();
             }
+        }
+
+        // Update hidden inputs for selected attributes
+        function updateSelectedAttributes() {
+            const attributes = document.querySelectorAll('.product-attribute');
+            const containerCart = document.getElementById('selectedAttributesContainer');
+            const containerBuy = document.getElementById('selectedAttributesContainerBuy');
+
+            // Clear existing hidden inputs
+            if (containerCart) containerCart.innerHTML = '';
+            if (containerBuy) containerBuy.innerHTML = '';
+
+            // Add hidden inputs for each selected attribute
+            attributes.forEach(function(attribute) {
+                if (attribute.value) {
+                    const attributeId = attribute.getAttribute('data-attribute-id');
+                    const attributeName = attribute.getAttribute('data-attribute-name');
+                    const selectedOption = attribute.options[attribute.selectedIndex];
+                    const selectedText = selectedOption.text;
+
+                    // Add to cart form
+                    if (containerCart) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'attributes[' + attributeId + ']';
+                        hiddenInput.value = attribute.value;
+                        containerCart.appendChild(hiddenInput);
+                    }
+
+                    // Add to buy now form
+                    if (containerBuy) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'attributes[' + attributeId + ']';
+                        hiddenInput.value = attribute.value;
+                        containerBuy.appendChild(hiddenInput);
+                    }
+                }
+            });
         }
 
         // Remove border error when user selects an option
@@ -808,6 +844,8 @@
                             }
                         }
                     }
+                    // Update hidden inputs whenever attribute changes
+                    updateSelectedAttributes();
                 });
             });
         });
