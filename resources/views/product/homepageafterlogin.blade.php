@@ -111,71 +111,57 @@
                     </div>
 
                     <div class="grid grid-cols-3 md:grid-cols-5 gap-6">
-                        <!-- Dekorasi -->
-                        <div class="text-center group cursor-pointer">
-                            <div
-                                class="w-14 h-14 mx-auto mb-3 bg-pink-100 rounded-full flex items-center justify-center group-hover:bg-pink-200 transition-colors">
-                                <svg class="w-7 h-7 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </div>
-                            <h3 class="font-semibold text-gray-900 text-sm">Dekorasi</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">300+</p>
-                        </div>
-                        <!-- Fotografi -->
-                        <div class="text-center group cursor-pointer">
-                            <div
-                                class="w-14 h-14 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </div>
-                            <h3 class="font-semibold text-gray-900 text-sm">Fotografi</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">150+</p>
-                        </div>
-                        <!-- Katering -->
-                        <div class="text-center group cursor-pointer">
-                            <div
-                                class="w-14 h-14 mx-auto mb-3 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-                                </svg>
-                            </div>
-                            <h3 class="font-semibold text-gray-900 text-sm">Katering</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">85+</p>
-                        </div>
-                        <!-- Venue -->
-                        <div class="text-center group cursor-pointer">
-                            <div
-                                class="w-14 h-14 mx-auto mb-3 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                                <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-                            </div>
-                            <h3 class="font-semibold text-gray-900 text-sm">Venue</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">75+</p>
-                        </div>
-                        <!-- Pakaian -->
-                        <div class="text-center group cursor-pointer">
-                            <div
-                                class="w-14 h-14 mx-auto mb-3 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
-                                <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                            <h3 class="font-semibold text-gray-900 text-sm">Pakaian</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">200+</p>
-                        </div>
+                        @php
+                            $categoryIcons = [
+                                'Dekorasi' => [
+                                    'icon' =>
+                                        'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                                    'color' => 'pink',
+                                ],
+                                'Fotografi' => [
+                                    'icon' =>
+                                        'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z M15 13a3 3 0 11-6 0 3 3 0 016 0z',
+                                    'color' => 'blue',
+                                ],
+                                'Katering' => [
+                                    'icon' =>
+                                        'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4',
+                                    'color' => 'green',
+                                ],
+                                'Venue' => [
+                                    'icon' =>
+                                        'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                                    'color' => 'purple',
+                                ],
+                                'Pakaian' => [
+                                    'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+                                    'color' => 'yellow',
+                                ],
+                            ];
+                        @endphp
+
+                        @foreach ($categories as $category)
+                            @php
+                                $iconData = $categoryIcons[$category->name] ?? [
+                                    'icon' =>
+                                        'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+                                    'color' => 'gray',
+                                ];
+                            @endphp
+                            <a href="{{ route('product') }}?kategori={{ $category->id }}"
+                                class="text-center group cursor-pointer">
+                                <div
+                                    class="w-14 h-14 mx-auto mb-3 bg-{{ $iconData['color'] }}-100 rounded-full flex items-center justify-center group-hover:bg-{{ $iconData['color'] }}-200 transition-colors">
+                                    <svg class="w-7 h-7 text-{{ $iconData['color'] }}-600" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="{{ $iconData['icon'] }}" />
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-gray-900 text-sm">{{ $category->name }}</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ $category->products_count }}+</p>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             </section>
@@ -200,162 +186,55 @@
 
                     <!-- 2 → 3 → 4 → 6 kolom -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5">
-                        <!-- Card 1 -->
-                        <article class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-3/2 overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&w=800&q=80"
-                                    alt="Gaun Pengantin Mewah Collection" class="w-full h-full object-cover">
+                        @forelse($featuredProducts as $product)
+                            @php
+                                $avgRating = $product->reviews->avg('rating') ?? 0;
+                                $totalReviews = $product->reviews->count();
+                            @endphp
+                            <article
+                                class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                                <a href="{{ route('product.detail', $product->id) }}">
+                                    <div class="aspect-3/2 overflow-hidden">
+                                        @if ($product->images && $product->images->count() > 0)
+                                            <img src="{{ asset('storage/' . $product->images->first()->image) }}"
+                                                alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="p-3">
+                                        <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
+                                            <span
+                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
+                                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path
+                                                        d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
+                                                </svg>{{ number_format($avgRating, 1) }}
+                                            </span>
+                                            <span class="text-gray-500">({{ $totalReviews }} ulasan)</span>
+                                        </div>
+                                        <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">
+                                            {{ Str::limit($product->name, 50) }}</h3>
+                                        <p class="text-[11px] text-gray-500 mt-0.5">
+                                            {{ $product->vendor->name ?? 'Vendor' }}</p>
+                                        <div class="mt-2">
+                                            <div class="text-pink-600 font-bold text-sm">Rp
+                                                {{ number_format($product->price, 0, ',', '.') }}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        @empty
+                            <div class="col-span-full text-center py-8">
+                                <p class="text-gray-500">Belum ada produk tersedia</p>
                             </div>
-                            <div class="p-3">
-                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                    <span
-                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                        </svg>4.8
-                                    </span><span class="text-gray-500">(97 ulasan)</span>
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">Gaun Pengantin Mewah
-                                    Collection</h3>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Atelier Bride</p>
-                                <div class="mt-2">
-                                    <div class="text-pink-600 font-bold text-sm">Rp 15.000.000</div>
-                                    <div class="text-[11px] text-gray-400 line-through">Rp 20.000.000</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Card 2 -->
-                        <article class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-3/2 overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                                    alt="Cincin Kawin Emas 18K" class="w-full h-full object-cover"
-                                    referrerpolicy="no-referrer">
-                            </div>
-                            <div class="p-3">
-                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                    <span
-                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                        </svg>4.9
-                                    </span><span class="text-gray-500">(137 ulasan)</span>
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">Cincin Kawin Emas 18K
-                                </h3>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Golden Ring Studio</p>
-                                <div class="mt-2">
-                                    <div class="text-pink-600 font-bold text-sm">Rp 8.500.000</div>
-                                    <div class="text-[11px] text-gray-400 line-through">Rp 10.000.000</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Card 3 -->
-                        <article class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-3/2 overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80"
-                                    alt="Paket Dekorasi Pelaminan Premium" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-3">
-                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                    <span
-                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                        </svg>4.7
-                                    </span><span class="text-gray-500">(112 ulasan)</span>
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">Paket Dekorasi Pelaminan
-                                    Premium</h3>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Floral Dreams</p>
-                                <div class="mt-2">
-                                    <div class="text-pink-600 font-bold text-sm">Rp 25.000.000</div>
-                                    <div class="text-[11px] text-gray-400 line-through">Rp 30.000.000</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Card 4 -->
-                        <article class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-3/2 overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80"
-                                    alt="Paket Fotografi Wedding Premium" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-3">
-                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                    <span
-                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                        </svg>4.9
-                                    </span><span class="text-gray-500">(104 ulasan)</span>
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">Paket Fotografi Wedding
-                                    Premium</h3>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Capture Moments</p>
-                                <div class="mt-2">
-                                    <div class="text-pink-600 font-bold text-sm">Rp 12.000.000</div>
-                                    <div class="text-[11px] text-gray-400 line-through">Rp 15.000.000</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Card 5 -->
-                        <article class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-3/2 overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=800&q=80"
-                                    alt="Paket Venue Romantis Tepi Kolam" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-3">
-                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                    <span
-                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                        </svg>4.6
-                                    </span><span class="text-gray-500">(89 ulasan)</span>
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">Paket Venue Romantis
-                                    Tepi Kolam</h3>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Emerald Hall</p>
-                                <div class="mt-2">
-                                    <div class="text-pink-600 font-bold text-sm">Rp 35.000.000</div>
-                                    <div class="text-[11px] text-gray-400 line-through">Rp 42.000.000</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Card 6 -->
-                        <article class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-3/2 overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80"
-                                    alt="Paket Katering Premium" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-3">
-                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                    <span
-                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                        </svg>4.7
-                                    </span><span class="text-gray-500">(76 ulasan)</span>
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">Paket Katering Premium
-                                </h3>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Prima Catering</p>
-                                <div class="mt-2">
-                                    <div class="text-pink-600 font-bold text-sm">Rp 28.000.000</div>
-                                    <div class="text-[11px] text-gray-400 line-through">Rp 33.000.000</div>
-                                </div>
-                            </div>
-                        </article>
+                        @endforelse
                     </div>
                 </div>
             </section>

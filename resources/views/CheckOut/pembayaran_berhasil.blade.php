@@ -87,26 +87,52 @@
             </div>
 
             <!-- Success Title -->
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Pembayaran Berhasil</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Pembayaran Berhasil!</h1>
 
             <!-- Success Message -->
-            <p class="text-gray-600 mb-12 text-base">Silahkan lanjutkan proses pesanan anda dengan penjual melalui chat
-            </p>
+            <p class="text-gray-600 mb-6 text-base">Terima kasih telah melakukan pembayaran. Pesanan Anda sedang
+                diproses.</p>
+
+            <!-- Order Details Card -->
+            <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8 text-left">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Detail Pesanan</h2>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Order ID:</span>
+                        <span class="text-sm font-semibold text-gray-900">{{ $transaction->order_id }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Total Pembayaran:</span>
+                        <span class="text-base font-bold text-pink-600">Rp
+                            {{ number_format($transaction->total, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Status Pembayaran:</span>
+                        <span class="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                            {{ ucfirst($transaction->payment_status ?? 'Pending') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Tanggal:</span>
+                        <span class="text-sm text-gray-900">{{ $transaction->created_at->format('d M Y, H:i') }}</span>
+                    </div>
+                </div>
+            </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-center space-x-4">
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
 
-                <!-- Kembali Button -->
-                <a href="/"
+                <!-- Lihat Pesanan Button -->
+                <a href="{{ route('user.orders') }}"
                     class="px-8 py-3 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 rounded-full text-white font-semibold shadow-md transition min-w-[200px]">
-                    Kembali
+                    Lihat Pesanan Saya
                 </a>
 
-                <!-- Chat Penjual Button -->
-                <a href="#"
-                    class="px-8 py-3 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 rounded-full text-white font-semibold shadow-md transition min-w-[200px] flex items-center justify-center space-x-2">
-                    <i class="far fa-comment-dots"></i>
-                    <span>Chat Penjual</span>
+                <!-- Kembali ke Beranda Button -->
+                <a href="{{ route('home') }}"
+                    class="px-8 py-3 bg-white border-2 border-pink-400 hover:bg-pink-50 rounded-full text-pink-600 font-semibold shadow-md transition min-w-[200px]">
+                    Kembali ke Beranda
                 </a>
 
             </div>

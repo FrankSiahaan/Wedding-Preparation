@@ -108,22 +108,10 @@
                     <span class="text-sm font-semibold text-red-600 whitespace-nowrap">Alamat Pengiriman</span>
                 </div>
 
-                <!-- Line 1 -->
+                <!-- Line -->
                 <div class="w-12 h-0.5 bg-gray-300"></div>
 
                 <!-- Step 2 - Inactive -->
-                <div class="flex items-center bg-gray-100 rounded-full px-5 py-2.5 gap-2.5">
-                    <div
-                        class="w-9 h-9 bg-gray-400 rounded-full flex items-center justify-center text-white flex-shrink-0">
-                        <i class="fas fa-credit-card text-xs"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-500 whitespace-nowrap">Metode Pembayaran</span>
-                </div>
-
-                <!-- Line 2 -->
-                <div class="w-12 h-0.5 bg-gray-300"></div>
-
-                <!-- Step 3 - Inactive -->
                 <div class="flex items-center bg-gray-100 rounded-full px-5 py-2.5 gap-2.5">
                     <div
                         class="w-9 h-9 bg-gray-400 rounded-full flex items-center justify-center text-white flex-shrink-0">
@@ -150,7 +138,7 @@
                     @if ($addresses && $addresses->count() > 0)
                         <div class="mb-6">
                             <h3 class="text-sm font-semibold text-gray-900 mb-3">Pilih Alamat Tersimpan</h3>
-                            <form action="{{ route('checkout.payment') }}" method="POST">
+                            <form action="{{ route('checkout.confirmation') }}" method="POST">
                                 @csrf
                                 <div class="space-y-3">
                                     @foreach ($addresses as $address)
@@ -182,7 +170,7 @@
 
                                 <button type="submit"
                                     class="w-full mt-6 px-6 py-3 bg-pink-600 hover:bg-pink-700 rounded-lg text-white font-semibold shadow-md transition">
-                                    Lanjut ke Pembayaran
+                                    Lanjut ke Konfirmasi
                                 </button>
                             </form>
                         </div>
@@ -218,7 +206,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('checkout.payment') }}" method="POST">
+                    <form action="{{ route('checkout.confirmation') }}" method="POST">
                         @csrf
 
                         <input type="hidden" name="use_new_address" value="1">
@@ -296,7 +284,7 @@
                         <!-- Submit Button -->
                         <button type="submit"
                             class="w-full px-6 py-3 bg-pink-600 hover:bg-pink-700 rounded-lg text-white font-semibold shadow-md transition">
-                            Lanjut ke Pembayaran
+                            Lanjut ke Konfirmasi
                         </button>
 
                     </form>

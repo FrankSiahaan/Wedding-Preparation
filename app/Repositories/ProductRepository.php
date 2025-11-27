@@ -30,12 +30,13 @@ class ProductRepository implements ProductRepositoryInterface
     public function getDetailProductById($id)
     {
         return $this->product->with([
-            'vendor',
+            'vendor.products.orderitems',
             'category',
             'variants.attributeValues.attribute',
             'images',
             'reviews.user',
-            'attributes.values'
+            'attributes.values',
+            'orderitems'
         ])->findOrFail($id);
     }
 

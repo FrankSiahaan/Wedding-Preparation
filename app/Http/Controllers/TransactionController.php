@@ -76,14 +76,31 @@ class TransactionController extends Controller
                     'quantity' => $request->quantity,
                     'price' => $variant->price,
                     'subtotal' => $variant->price * $request->quantity,
-                    'product' => $product
+                    'product' => [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'vendor_id' => $product->vendor_id,
+                        'vendor' => $product->vendor ? ['name' => $product->vendor->name] : null,
+                        'images' => $product->images->map(fn($img) => ['image' => $img->image])->toArray()
+                    ]
                 ];
 
                 session(['checkout_type' => 'buy_now']);
                 session(['checkout_items' => [$checkoutItem]]);
 
                 $cartTotal = $checkoutItem['subtotal'];
-                $cart = (object)['cartitems' => collect([(object)$checkoutItem])];
+
+                // Convert to object for view
+                $itemObj = (object) $checkoutItem;
+                $itemObj->product = (object) $checkoutItem['product'];
+                if (isset($checkoutItem['product']['vendor'])) {
+                    $itemObj->product->vendor = (object) $checkoutItem['product']['vendor'];
+                }
+                if (isset($checkoutItem['product']['images'])) {
+                    $itemObj->product->images = collect($checkoutItem['product']['images'])->map(fn($img) => (object) $img);
+                }
+
+                $cart = (object)['cartitems' => collect([$itemObj])];
             } else {
                 // Regular cart checkout
                 $cart = $this->cartRepository->getUserCart($userId);
@@ -93,8 +110,26 @@ class TransactionController extends Controller
                     return redirect()->route('cart.index')->with('error', 'Keranjang belanja Anda kosong');
                 }
 
+                // Convert cart items to array and store in session
+                $checkoutItems = $cart->cartitems->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                        'subtotal' => $item->subtotal,
+                        'product' => [
+                            'id' => $item->product->id,
+                            'name' => $item->product->name,
+                            'vendor_id' => $item->product->vendor_id,
+                            'vendor' => $item->product->vendor ? ['name' => $item->product->vendor->name] : null,
+                            'images' => $item->product->images->map(fn($img) => ['image' => $img->image])->toArray()
+                        ]
+                    ];
+                })->toArray();
+
                 session(['checkout_type' => 'cart']);
-                session()->forget('checkout_items');
+                session(['checkout_items' => $checkoutItems]);
             }
 
             return view('CheckOut.alamat_pengiriman', compact('cart', 'cartTotal', 'addresses'));
@@ -104,12 +139,17 @@ class TransactionController extends Controller
     }
 
     /**
-     * Show payment method page
+     * Show order confirmation page
      */
-    public function checkoutPayment(Request $request)
+    public function checkoutConfirmation(Request $request)
     {
         try {
             $userId = Auth::id();
+
+            // Verify checkout session exists
+            if (!session()->has('checkout_items') || empty(session('checkout_items'))) {
+                return redirect()->route('cart.index')->with('error', 'Silakan mulai proses checkout dari keranjang');
+            }
 
             // Check if using new address or existing one
             if ($request->has('use_new_address') && $request->use_new_address == '1') {
@@ -155,58 +195,63 @@ class TransactionController extends Controller
                 $address = Address::findOrFail($addressId);
             }
 
-            // Get checkout data based on type
-            if (session('checkout_type') === 'buy_now') {
-                $checkoutItems = session('checkout_items');
-                $cartTotal = collect($checkoutItems)->sum('subtotal');
-                $cart = (object)['cartitems' => collect(array_map(fn($item) => (object)$item, $checkoutItems))];
-            } else {
-                $cart = $this->cartRepository->getUserCart($userId);
-                $cartTotal = $this->cartRepository->getCartTotal($userId);
-            }
+            // Get checkout data from session
+            $checkoutItems = session('checkout_items', []);
+
+            // Convert array items to objects for view compatibility
+            $cartItems = collect($checkoutItems)->map(function ($item) {
+                $itemObj = (object) $item;
+                // Convert product array to object with nested objects
+                if (isset($item['product']) && is_array($item['product'])) {
+                    $productData = (object) $item['product'];
+                    if (isset($item['product']['vendor']) && is_array($item['product']['vendor'])) {
+                        $productData->vendor = (object) $item['product']['vendor'];
+                    }
+                    if (isset($item['product']['images']) && is_array($item['product']['images'])) {
+                        $productData->images = collect($item['product']['images'])->map(fn($img) => (object) $img);
+                    }
+                    $itemObj->product = $productData;
+                }
+                return $itemObj;
+            });
+
+            $cartTotal = $cartItems->sum('subtotal');
+            $cart = (object)['cartitems' => $cartItems];
 
             // Store address_id in session
             session(['checkout_address_id' => $addressId]);
 
-            return view('CheckOut.metode_pembayaran', compact('cart', 'cartTotal', 'address'));
+            return view('CheckOut.konfirmasi_pesanan', compact('cart', 'cartTotal', 'address'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->route('checkout.shipping')->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            Log::error('Checkout payment error: ' . $e->getMessage());
+            Log::error('Checkout confirmation error: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
             return redirect()->route('checkout.shipping')->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
     /**
-     * Show order confirmation page
+     * Process the order
      */
-    public function checkoutConfirmation(Request $request)
+    public function payment(Request $request)
     {
-        $request->validate([
-            'payment_method' => 'required|string'
-        ]);
+        $this->transactionRepository->saveTransactionDataToSession($request->all());
 
-        $userId = Auth::id();
+        $transaction = $this->transactionRepository->saveTransaction($this->transactionRepository->getTransactionDataFromSession());
 
-        // Get checkout data based on type
-        if (session('checkout_type') === 'buy_now') {
-            $checkoutItems = session('checkout_items');
-            $cartTotal = collect($checkoutItems)->sum('subtotal');
-            $cart = (object)['cartitems' => collect(array_map(fn($item) => (object)$item, $checkoutItems))];
-        } else {
-            $cart = $this->cartRepository->getUserCart($userId);
-            $cartTotal = $this->cartRepository->getCartTotal($userId);
-        }
+        // Midtrans Configuration
+        \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = config('midtrans.serverKey');
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
 
-        $addressId = session('checkout_address_id');
-        $address = Address::findOrFail($addressId);
-        $paymentMethod = $request->payment_method;
+        DB::commit();
 
-        // Store payment method in session
-        session(['checkout_payment_method' => $paymentMethod]);
-
-        return view('CheckOut.konfirmasi_pesanan', compact('cart', 'cartTotal', 'address', 'paymentMethod'));
+        return redirect()->route('checkout.success', ['transaction' => $transaction->id]);
     }
 
     /**
@@ -216,24 +261,19 @@ class TransactionController extends Controller
     {
         $userId = Auth::id();
         $addressId = session('checkout_address_id');
-        $paymentMethod = session('checkout_payment_method');
+        $checkoutItems = session('checkout_items', []);
 
-        if (!$addressId || !$paymentMethod) {
+        if (!$addressId || empty($checkoutItems)) {
             return redirect()->route('cart.index')->with('error', 'Silakan lengkapi proses checkout');
         }
 
         DB::beginTransaction();
         try {
-            // Get checkout data based on type
-            if (session('checkout_type') === 'buy_now') {
-                $checkoutItems = session('checkout_items');
-                $cartTotal = collect($checkoutItems)->sum('subtotal');
-                $items = collect(array_map(fn($item) => (object)$item, $checkoutItems));
-            } else {
-                $cart = $this->cartRepository->getUserCart($userId);
-                $cartTotal = $this->cartRepository->getCartTotal($userId);
-                $items = $cart->cartitems;
-            }
+            // Calculate total
+            $cartTotal = collect($checkoutItems)->sum('subtotal');
+
+            // Get address for customer details
+            $address = Address::findOrFail($addressId);
 
             // Create transaction
             $transaction = Transaction::create([
@@ -241,40 +281,168 @@ class TransactionController extends Controller
                 'address_id' => $addressId,
                 'total' => $cartTotal,
                 'payment_status' => 'pending',
-                'order_status' => 'pending'
+                'oder_status' => 'proses'
             ]);
 
             // Create order items
-            foreach ($items as $item) {
-                // Handle both cart items and buy now items
-                $productId = $item->product_id ?? $item->product->id;
-                $vendorId = isset($item->product) && is_object($item->product) ? $item->product->vendor_id : $item->vendor_id;
+            foreach ($checkoutItems as $item) {
+                $vendorId = null;
+                $variantId = null;
+
+                if (is_array($item)) {
+                    $vendorId = $item['product']['vendor_id'] ?? null;
+                    $variantId = $item['variant_id'] ?? null;
+                } else {
+                    $vendorId = $item->product->vendor_id ?? null;
+                    $variantId = $item->variant_id ?? null;
+                }
 
                 Orderitems::create([
                     'transaction_id' => $transaction->id,
-                    'product_id' => $productId,
+                    'product_id' => is_array($item) ? $item['product_id'] : $item->product_id,
+                    'variant_id' => $variantId,
                     'vendor_id' => $vendorId,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'subtotal' => $item->subtotal
+                    'quantity' => is_array($item) ? $item['quantity'] : $item->quantity,
+                    'price' => is_array($item) ? $item['price'] : $item->price,
                 ]);
             }
 
-            // Clear cart only if this was a cart checkout
-            if (session('checkout_type') === 'cart') {
-                $cart->cartitems()->delete();
-            }
+            // Generate unique order ID
+            $orderId = 'ORDER-' . $transaction->id . '-' . time();
 
-            // Clear all checkout session data
-            session()->forget(['checkout_address_id', 'checkout_payment_method', 'checkout_type', 'checkout_items']);
+            // Update transaction with order_id
+            $transaction->update(['order_id' => $orderId]);
+
+            // Save transaction data to session (sesuai contoh gambar)
+            $this->transactionRepository->saveTransactionDataToSession($request->all());
+
+            // Set your Merchant Server Key
+            \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+            // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+            \Midtrans\Config::$isProduction = config('midtrans.isProduction');
+            // Set sanitization on (default)
+            \Midtrans\Config::$isSanitized = config('midtrans.isSanitized');
+            // Set 3DS transaction for credit card to true
+            \Midtrans\Config::$is3ds = config('midtrans.is3ds');
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $transaction->order_id,
+                    'gross_amount' => (int) $transaction->total,
+                ],
+                'customer_details' => [
+                    'first_name' => $address->recipient_name,
+                    'email' => Auth::user()->email,
+                    'phone' => $address->phone,
+                ],
+            ];
+
+            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
 
             DB::commit();
 
-            return redirect()->route('checkout.success', ['transaction' => $transaction->id]);
+            // Clear cart from database if cart checkout
+            if (session('checkout_type') === 'cart') {
+                $this->cartRepository->getUserCart($userId)->cartitems()->delete();
+            }
+
+            // Clear checkout session data
+            session()->forget(['checkout_address_id', 'checkout_type', 'checkout_items']);
+
+            return redirect($paymentUrl);
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            Log::error('Process order error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            return redirect()->route('cart.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Handle Midtrans payment notification webhook
+     */
+    public function handleNotification(Request $request)
+    {
+        try {
+            // Configure Midtrans
+            \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+            \Midtrans\Config::$isProduction = config('midtrans.isProduction');
+
+            // Create notification instance
+            $notification = new \Midtrans\Notification();
+
+            // Get transaction data
+            $orderId = $notification->order_id;
+            $transactionStatus = $notification->transaction_status;
+            $fraudStatus = $notification->fraud_status ?? 'accept';
+
+            Log::info('Midtrans Notification Received', [
+                'order_id' => $orderId,
+                'transaction_status' => $transactionStatus,
+                'fraud_status' => $fraudStatus
+            ]);
+
+            // Find transaction by order_id
+            $transaction = Transaction::where('order_id', $orderId)->first();
+
+            if (!$transaction) {
+                Log::error('Transaction not found for order_id: ' . $orderId);
+                return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
+            }
+
+            // Update payment status based on transaction status
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'accept') {
+                    $transaction->update([
+                        'payment_status' => 'paid',
+                        'oder_status' => 'proses'
+                    ]);
+                }
+            } elseif ($transactionStatus == 'settlement') {
+                $transaction->update([
+                    'payment_status' => 'paid',
+                    'oder_status' => 'proses'
+                ]);
+            } elseif ($transactionStatus == 'pending') {
+                $transaction->update(['payment_status' => 'pending']);
+            } elseif ($transactionStatus == 'deny') {
+                $transaction->update(['payment_status' => 'failed']);
+            } elseif ($transactionStatus == 'expire') {
+                $transaction->update(['payment_status' => 'expired']);
+            } elseif ($transactionStatus == 'cancel') {
+                $transaction->update(['payment_status' => 'cancelled']);
+            }
+
+            return response()->json(['status' => 'success']);
+        } catch (\Exception $e) {
+            Log::error('Midtrans notification error: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Handle payment finish redirect from Midtrans
+     */
+    public function paymentFinish(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        $transactionStatus = $request->query('transaction_status');
+
+        if (!$orderId) {
+            return redirect()->route('home')->with('error', 'Order ID tidak ditemukan');
+        }
+
+        // Find transaction by order_id
+        $transaction = Transaction::where('order_id', $orderId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$transaction) {
+            return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan');
+        }
+
+        // Redirect to success page
+        return redirect()->route('checkout.success', ['transaction' => $transaction->id]);
     }
 
     /**
@@ -299,5 +467,22 @@ class TransactionController extends Controller
             ->findOrFail($id);
 
         return view('user.order_detail', compact('transaction'));
+    }
+
+    /**
+     * Mark order as completed
+     */
+    public function markAsCompleted($id)
+    {
+        try {
+            $transaction = Transaction::where('user_id', Auth::id())->findOrFail($id);
+
+            $transaction->update(['oder_status' => 'berhasil']);
+
+            return redirect()->back()->with('success', 'Pesanan berhasil ditandai selesai');
+        } catch (\Exception $e) {
+            Log::error('Mark as completed error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan');
+        }
     }
 }

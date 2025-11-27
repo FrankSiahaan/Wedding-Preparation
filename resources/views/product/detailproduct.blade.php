@@ -22,6 +22,18 @@
         .flash-message {
             animation: slideInRight 0.4s ease-out;
         }
+
+        #mainProductImage {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .thumbnail-btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .thumbnail-btn:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 
@@ -111,6 +123,19 @@
         </div>
     </header>
 
+    {{-- Image Modal --}}
+    <div id="imageModal" class="fixed inset-0 z-50 bg-black bg-opacity-75 items-center justify-center p-4"
+        style="display: none;" onclick="closeImageModal()">
+        <div class="relative max-w-4xl max-h-[90vh]" onclick="event.stopPropagation()">
+            <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <img id="modalImage" src="" alt="Review image" class="max-w-full max-h-[90vh] rounded-lg">
+        </div>
+    </div>
+
     {{-- MAIN CONTENT --}}
     <main class="container mx-auto px-4 max-w-6xl py-4">
 
@@ -140,9 +165,10 @@
                 {{-- LEFT COLUMN: Product Images Only --}}
                 <div class="bg-white rounded-lg border border-gray-100 p-4">
                     {{-- Main Image - Diperkecil --}}
-                    <div class="bg-gray-50 rounded-lg overflow-hidden mb-3 max-w-sm mx-auto">
+                    <div class="bg-gray-50 rounded-lg overflow-hidden mb-3 max-w-sm mx-auto cursor-pointer"
+                        onclick="openImageModal(document.getElementById('mainProductImage').src)">
                         @if ($detail->images && $detail->images->count() > 0)
-                            <img src="{{ asset('storage/' . $detail->images->first()->image) }}"
+                            <img id="mainProductImage" src="{{ asset('storage/' . $detail->images->first()->image) }}"
                                 alt="{{ $detail->name }}" class="w-full aspect-square object-cover">
                         @else
                             <div class="w-full aspect-square bg-gray-200 flex items-center justify-center">
@@ -152,39 +178,46 @@
                     </div>
 
                     {{-- Thumbnail Images --}}
-                    <div class="grid grid-cols-4 gap-2 max-w-sm mx-auto">
-                        @if ($detail->images && $detail->images->count() > 0)
-                            @foreach ($detail->images->take(4) as $index => $image)
-                                <button
-                                    class="bg-white rounded-lg overflow-hidden {{ $index === 0 ? 'border-2 border-pink-500' : 'border border-gray-200 hover:border-pink-300' }}">
-                                    <img src="{{ asset('storage/' . $image->image) }}"
-                                        alt="Thumbnail {{ $index + 1 }}" class="w-full aspect-square object-cover">
-                                </button>
-                            @endforeach
-                            {{-- Fill empty slots if less than 4 images --}}
-                            @for ($i = $detail->images->count(); $i < 4; $i++)
-                                <button class="bg-white rounded-lg overflow-hidden border border-gray-200">
-                                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
+                    <div class="max-w-sm mx-auto">
+                        <div class="grid grid-cols-4 gap-2" id="thumbnailContainer">
+                            @if ($detail->images && $detail->images->count() > 0)
+                                @foreach ($detail->images as $index => $image)
+                                    <button onclick="changeMainImage('{{ asset('storage/' . $image->image) }}', this)"
+                                        class="thumbnail-btn bg-white rounded-lg overflow-hidden transition-all {{ $index === 0 ? 'border-2 border-pink-500' : 'border border-gray-200 hover:border-pink-300' }}"
+                                        data-image-index="{{ $index }}">
+                                        <img src="{{ asset('storage/' . $image->image) }}"
+                                            alt="Thumbnail {{ $index + 1 }}"
+                                            class="w-full aspect-square object-cover">
+                                    </button>
+                                @endforeach
+                            @else
+                                @for ($i = 0; $i < 4; $i++)
+                                    <div class="bg-white rounded-lg overflow-hidden border border-gray-200">
+                                        <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
                                     </div>
+                                @endfor
+                            @endif
+                        </div>
+
+                        @if ($detail->images && $detail->images->count() > 4)
+                            <div class="mt-2 text-center">
+                                <button onclick="toggleAllThumbnails()" id="toggleThumbBtn"
+                                    class="text-xs text-pink-600 hover:text-pink-700 font-medium flex items-center justify-center gap-1 mx-auto">
+                                    <span id="toggleThumbText">Lihat semua foto
+                                        ({{ $detail->images->count() }})</span>
+                                    <svg id="toggleThumbIcon" class="w-3 h-3 transition-transform" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </button>
-                            @endfor
-                        @else
-                            @for ($i = 0; $i < 4; $i++)
-                                <button class="bg-white rounded-lg overflow-hidden border border-gray-200">
-                                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                </button>
-                            @endfor
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -193,15 +226,20 @@
                 <div class="flex items-center">
                     {{-- Product Title & Rating --}}
                     <div class="bg-white rounded-lg p-3 mb-3 border border-gray-100 w-full">
-                        <h1 class="text-sm font-bold text-gray-900 mb-1.5">{{ $detail->name }}</h1>
+                        <h1 class="text-xl font-bold text-gray-900 mb-2">{{ $detail->name }}</h1>
 
                         <div class="flex items-center gap-2 mb-2">
                             <div class="flex items-center gap-0.5">
+                                @php
+                                    $avgRating = $detail->reviews->avg('rating') ?? 0;
+                                    $totalReviews = $detail->reviews->count();
+                                    $totalSold = $detail->orderitems->sum('quantity');
+                                @endphp
                                 <span
-                                    class="text-yellow-500 font-semibold text-xs">{{ number_format($detail->avg_rating ?? 0, 1) }}</span>
+                                    class="text-yellow-500 font-semibold text-xs">{{ number_format($avgRating, 1) }}</span>
                                 <div class="flex gap-0.5">
                                     @php
-                                        $rating = $detail->avg_rating ?? 0;
+                                        $rating = $avgRating;
                                         $fullStars = floor($rating);
                                         $hasHalfStar = $rating - $fullStars >= 0.5;
                                     @endphp
@@ -224,11 +262,11 @@
                                         @endif
                                     @endfor
                                 </div>
-                                <span class="text-[10px] text-gray-500">({{ $detail->total_review ?? 0 }}
+                                <span class="text-[10px] text-gray-500">({{ $totalReviews }}
                                     ulasan)</span>
                             </div>
                             <div class="border-l border-gray-300 pl-2">
-                                <span class="text-[10px] text-gray-600">{{ $detail->total_sold ?? 0 }} Terjual</span>
+                                <span class="text-[10px] text-gray-600">{{ $totalSold }} Terjual</span>
                             </div>
                         </div>
 
@@ -243,10 +281,12 @@
                             @foreach ($detail->attributes as $attribute)
                                 <div class="mb-2">
                                     <label class="block text-[10px] font-semibold text-gray-900 mb-1">
-                                        Pilih {{ $attribute->name }}
+                                        Pilih {{ $attribute->name }} <span class="text-red-500">*</span>
                                     </label>
                                     <select name="attribute_{{ $attribute->id }}"
-                                        class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
+                                        id="attribute_{{ $attribute->id }}"
+                                        class="product-attribute w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500"
+                                        data-attribute-name="{{ $attribute->name }}">
                                         <option value="">Pilih {{ strtolower($attribute->name) }}</option>
                                         @foreach ($attribute->values as $value)
                                             <option value="{{ $value->id }}">{{ $value->value }}</option>
@@ -254,6 +294,10 @@
                                     </select>
                                 </div>
                             @endforeach
+                            {{-- Error Message Container --}}
+                            <div id="attributeError"
+                                class="hidden mb-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1.5">
+                            </div>
                         @else
                             {{-- Fallback jika tidak ada attributes --}}
                             <div class="mb-2">
@@ -441,8 +485,13 @@
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div class="text-center py-2 bg-gray-50 rounded-lg border border-gray-100">
                         <div class="text-xs text-gray-600">Produk Terjual</div>
+                        @php
+                            $totalSoldByVendor = $detail->vendor->products->sum(function ($product) {
+                                return $product->orderitems->sum('quantity');
+                            });
+                        @endphp
                         <div class="text-sm font-semibold text-gray-900">
-                            {{ $detail->vendor->products->sum('total_sold') ?? 0 }}
+                            {{ $totalSoldByVendor }}
                         </div>
                     </div>
                     <div class="text-center py-2 bg-gray-50 rounded-lg border border-gray-100">
@@ -452,17 +501,9 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <button
-                        class="py-2 border border-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 flex items-center justify-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        Chat Penjual
-                    </button>
+                <div class="flex justify-center">
                     <a href="{{ route('vendor.show', $detail->vendor_id) }}"
-                        class="py-2 border border-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 text-center">
+                        class="w-full py-2 border border-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 text-center">
                         Kunjungi Toko
                     </a>
                 </div>
@@ -544,8 +585,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-0.5">
-                                            <span
-                                                class="font-semibold text-xs">{{ $review->user->name ?? 'Anonymous' }}</span>
+                                            <span class="font-semibold text-xs">{{ $review->user->name }}</span>
                                             <div class="flex">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     @if ($i <= $review->rating)
@@ -566,7 +606,20 @@
                                             {{ $review->created_at->diffForHumans() }}</p>
                                     </div>
                                 </div>
-                                <p class="text-xs text-gray-700">{{ $review->comment }}</p>
+                                <p class="text-xs text-gray-700 mb-2">{{ $review->comment }}</p>
+
+                                {{-- Review Images --}}
+                                @if (!empty($review->images) && is_array($review->images))
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        @foreach ($review->images as $imagePath)
+                                            <div class="relative group w-16 h-16">
+                                                <img src="{{ asset('storage/' . $imagePath) }}" alt="Review image"
+                                                    class="w-full h-full object-cover rounded-lg border border-gray-200 hover:border-pink-300 cursor-pointer transition-all"
+                                                    onclick="openImageModal('{{ asset('storage/' . $imagePath) }}')">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -619,8 +672,49 @@
             }
         }
 
+        // Validate product attributes
+        function validateAttributes() {
+            const attributes = document.querySelectorAll('.product-attribute');
+            const errorContainer = document.getElementById('attributeError');
+            let isValid = true;
+            let errorMessage = '';
+
+            attributes.forEach(function(attribute) {
+                if (!attribute.value) {
+                    isValid = false;
+                    const attributeName = attribute.getAttribute('data-attribute-name');
+                    if (errorMessage) {
+                        errorMessage += ', ' + attributeName;
+                    } else {
+                        errorMessage = 'Harap pilih ' + attributeName;
+                    }
+                    attribute.classList.add('border-red-500');
+                } else {
+                    attribute.classList.remove('border-red-500');
+                }
+            });
+
+            if (!isValid && errorContainer) {
+                errorContainer.textContent = errorMessage;
+                errorContainer.classList.remove('hidden');
+                // Auto hide after 3 seconds
+                setTimeout(function() {
+                    errorContainer.classList.add('hidden');
+                }, 3000);
+            } else if (errorContainer) {
+                errorContainer.classList.add('hidden');
+            }
+
+            return isValid;
+        }
+
         // Add to cart function with notification
         function addToCart() {
+            // Validate attributes first
+            if (!validateAttributes()) {
+                return;
+            }
+
             syncQuantity();
 
             const addToCartBtn = document.getElementById('addToCartBtn');
@@ -686,12 +780,39 @@
 
         // Buy now function - direct checkout
         function buyNow() {
+            // Validate attributes first
+            if (!validateAttributes()) {
+                return;
+            }
+
             syncQuantity();
             const form = document.getElementById('buyNowForm');
             if (form) {
                 form.submit();
             }
-        } // Quantity controls
+        }
+
+        // Remove border error when user selects an option
+        document.addEventListener('DOMContentLoaded', function() {
+            const attributes = document.querySelectorAll('.product-attribute');
+            attributes.forEach(function(attribute) {
+                attribute.addEventListener('change', function() {
+                    if (this.value) {
+                        this.classList.remove('border-red-500');
+                        // Check if all attributes are selected
+                        const allSelected = Array.from(attributes).every(attr => attr.value);
+                        if (allSelected) {
+                            const errorContainer = document.getElementById('attributeError');
+                            if (errorContainer) {
+                                errorContainer.classList.add('hidden');
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        // Quantity controls
         (function() {
             const quantityInput = document.getElementById('quantityInput');
             const decreaseBtn = document.getElementById('decreaseQty');
@@ -796,6 +917,103 @@
             const flashMessage = document.getElementById('flashMessage');
             flashMessage.classList.add('hidden');
         }
+
+        // Change main product image when thumbnail is clicked
+        function changeMainImage(imageSrc, clickedButton) {
+            const mainImage = document.getElementById('mainProductImage');
+
+            if (mainImage) {
+                // Update main image with fade effect
+                mainImage.style.opacity = '0.5';
+
+                setTimeout(() => {
+                    mainImage.src = imageSrc;
+                    mainImage.style.opacity = '1';
+                }, 150);
+            }
+
+            // Update active thumbnail border
+            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+            thumbnails.forEach(btn => {
+                btn.classList.remove('border-2', 'border-pink-500');
+                btn.classList.add('border', 'border-gray-200');
+            });
+
+            if (clickedButton) {
+                clickedButton.classList.remove('border', 'border-gray-200');
+                clickedButton.classList.add('border-2', 'border-pink-500');
+            }
+        }
+
+        // Toggle show all thumbnails
+        let showingAllThumbnails = false;
+
+        function toggleAllThumbnails() {
+            const container = document.getElementById('thumbnailContainer');
+            const toggleText = document.getElementById('toggleThumbText');
+            const toggleIcon = document.getElementById('toggleThumbIcon');
+            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+
+            showingAllThumbnails = !showingAllThumbnails;
+
+            if (showingAllThumbnails) {
+                // Show all thumbnails
+                thumbnails.forEach((thumb, index) => {
+                    thumb.style.display = 'block';
+                });
+                if (toggleText) toggleText.textContent = 'Sembunyikan foto';
+                if (toggleIcon) toggleIcon.style.transform = 'rotate(180deg)';
+            } else {
+                // Show only first 4 thumbnails
+                thumbnails.forEach((thumb, index) => {
+                    if (index >= 4) {
+                        thumb.style.display = 'none';
+                    }
+                });
+                if (toggleText) toggleText.textContent = 'Lihat semua foto (' + thumbnails.length + ')';
+                if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Initialize: hide thumbnails after 4th on page load if more than 4 images
+        document.addEventListener('DOMContentLoaded', function() {
+            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+            if (thumbnails.length > 4) {
+                thumbnails.forEach((thumb, index) => {
+                    if (index >= 4) {
+                        thumb.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Image Modal Functions
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+
+            if (modal && modalImage) {
+                modalImage.src = imageSrc;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
     </script>
 
 </body>

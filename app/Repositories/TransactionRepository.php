@@ -50,4 +50,19 @@ class TransactionRepository implements TransactionRepositoryInterface
         $transaction->update($data);
         return $transaction;
     }
+
+    public function saveTransactionDataToSession(array $data)
+    {
+        session(['transaction_data' => $data]);
+    }
+
+    public function getTransactionDataFromSession()
+    {
+        return session('transaction_data', []);
+    }
+
+    public function saveTransaction(array $data)
+    {
+        return $this->transaction->create($data);
+    }
 }

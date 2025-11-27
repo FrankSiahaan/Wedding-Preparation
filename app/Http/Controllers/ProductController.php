@@ -20,7 +20,12 @@ class ProductController extends Controller
 
     public function home()
     {
-        return view('product.homepageafterlogin');
+        $categories = Category::withCount('products')->get();
+        $featuredProducts = $this->productRepository->getAll()
+            ->take(6)
+            ->load(['images', 'reviews', 'vendor']);
+
+        return view('product.homepageafterlogin', compact('categories', 'featuredProducts'));
     }
 
 

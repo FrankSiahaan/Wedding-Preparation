@@ -172,7 +172,7 @@
                                             <div class="flex items-center gap-2 mb-2">
                                                 <h3 class="font-semibold text-gray-900">{{ $address->recipient_name }}
                                                 </h3>
-                                                @if ($address->is_primary)
+                                                @if ($address->is_default)
                                                     <span
                                                         class="px-2 py-0.5 bg-pink-50 text-pink-600 text-xs font-medium rounded">
                                                         Utama
@@ -181,16 +181,16 @@
                                             </div>
                                             <p class="text-sm text-gray-600 mb-1">{{ $address->phone }}</p>
                                             <p class="text-sm text-gray-700 leading-relaxed">
-                                                {{ $address->address_line1 }}
-                                                @if ($address->address_line2)
-                                                    <br>{{ $address->address_line2 }}
+                                                {{ $address->address }}
+                                                @if ($address->street)
+                                                    <br>{{ $address->street }}
                                                 @endif
                                                 <br>{{ $address->city }}, {{ $address->province }}
                                                 {{ $address->postal_code }}
                                             </p>
                                         </div>
                                         <div class="flex gap-2 ml-4">
-                                            @if (!$address->is_primary)
+                                            @if (!$address->is_default)
                                                 <form action="{{ route('user.address.set-primary', $address->id) }}"
                                                     method="POST">
                                                     @csrf
@@ -201,11 +201,12 @@
                                                     </button>
                                                 </form>
                                             @endif
-                                            <button onclick="openEditModal({{ $address->id }})"
+                                            <button
+                                                onclick="openEditModal({{ $address->id }}, '{{ addslashes($address->recipient_name) }}', '{{ $address->phone }}', '{{ addslashes($address->address) }}', '{{ $address->city }}', '{{ $address->province }}', '{{ $address->postal_code }}')"
                                                 class="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 border border-gray-200 rounded font-medium transition-colors">
                                                 Edit
                                             </button>
-                                            @if (!$address->is_primary)
+                                            @if (!$address->is_default)
                                                 <form action="{{ route('user.address.delete', $address->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Yakin ingin menghapus alamat ini?')">
@@ -234,14 +235,254 @@
         </div>
     </footer>
 
+    {{-- Modal Tambah Alamat --}}
+    <div id="addAddressModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-100 p-6 rounded-t-xl">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Tambah Alamat Baru</h3>
+                        <p class="text-sm text-gray-500 mt-1">Lengkapi informasi alamat pengiriman Anda</p>
+                    </div>
+                    <button onclick="closeAddAddressModal()"
+                        class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <form action="{{ route('user.address.store') }}" method="POST" class="p-6 space-y-5">
+                @csrf
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nama Penerima <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="recipient_name" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="Masukkan nama penerima">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nomor Telepon <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" name="phone" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="08xxxxxxxxxx">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Alamat Lengkap <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="address" required rows="3"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+                        placeholder="Contoh: Jl. Merdeka No. 123, Kelurahan Pasar Baru, RT 01/RW 05"></textarea>
+                </div>
+
+                <input type="hidden" name="street" value="">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Kota <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="city" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="Jakarta">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Provinsi <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="province" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="DKI Jakarta">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Kode Pos <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="postal_code" required maxlength="5"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="12345">
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-pink-50 border border-pink-100 rounded-lg">
+                    <input type="checkbox" name="is_default" id="is_default" value="1"
+                        class="w-5 h-5 mt-0.5 text-pink-600 border-gray-300 rounded focus:ring-pink-500 cursor-pointer">
+                    <label for="is_default" class="text-sm text-gray-700 cursor-pointer">
+                        <span class="font-medium">Jadikan sebagai alamat utama</span>
+                        <p class="text-xs text-gray-500 mt-1">Alamat ini akan digunakan sebagai alamat pengiriman
+                            default</p>
+                    </label>
+                </div>
+
+                <div class="flex gap-3 pt-2 border-t border-gray-100">
+                    <button type="button" onclick="closeAddAddressModal()"
+                        class="flex-1 px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium shadow-sm hover:shadow transition-all">
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Simpan Alamat
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Modal Edit Alamat --}}
+    <div id="editAddressModal" style="display: none;"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-100 p-6 rounded-t-xl">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Edit Alamat</h3>
+                        <p class="text-sm text-gray-500 mt-1">Perbarui informasi alamat pengiriman Anda</p>
+                    </div>
+                    <button onclick="closeEditAddressModal()"
+                        class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <form id="editAddressForm" method="POST" class="p-6 space-y-5">
+                @csrf
+                @method('PUT')
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nama Penerima <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="recipient_name" id="edit_recipient_name" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="Masukkan nama penerima">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nomor Telepon <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" name="phone" id="edit_phone" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="08xxxxxxxxxx">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Alamat Lengkap <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="address" id="edit_address" required rows="3"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+                        placeholder="Contoh: Jl. Merdeka No. 123, Kelurahan Pasar Baru, RT 01/RW 05"></textarea>
+                </div>
+
+                <input type="hidden" name="street" id="edit_street" value="">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Kota <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="city" id="edit_city" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="Jakarta">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Provinsi <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="province" id="edit_province" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="DKI Jakarta">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Kode Pos <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="postal_code" id="edit_postal_code" required maxlength="5"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            placeholder="12345">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2 border-t border-gray-100">
+                    <button type="button" onclick="closeEditAddressModal()"
+                        class="flex-1 px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium shadow-sm hover:shadow transition-all">
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Simpan Perubahan
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openAddModal() {
-            alert('Form tambah alamat akan segera tersedia');
+            document.getElementById('addAddressModal').style.display = 'flex';
         }
 
-        function openEditModal(id) {
-            alert('Form edit alamat akan segera tersedia');
+        function closeAddAddressModal() {
+            document.getElementById('addAddressModal').style.display = 'none';
         }
+
+        function openEditModal(id, name, phone, address, city, province, postalCode) {
+            document.getElementById('editAddressForm').action = `/addresses/${id}`;
+            document.getElementById('edit_recipient_name').value = name;
+            document.getElementById('edit_phone').value = phone;
+            document.getElementById('edit_address').value = address;
+            document.getElementById('edit_city').value = city;
+            document.getElementById('edit_province').value = province;
+            document.getElementById('edit_postal_code').value = postalCode;
+            document.getElementById('edit_street').value = '';
+
+            document.getElementById('editAddressModal').style.display = 'flex';
+        }
+
+        function closeEditAddressModal() {
+            document.getElementById('editAddressModal').style.display = 'none';
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('addAddressModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddAddressModal();
+            }
+        });
+
+        document.getElementById('editAddressModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditAddressModal();
+            }
+        });
     </script>
 
 </body>

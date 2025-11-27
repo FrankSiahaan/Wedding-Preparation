@@ -34,6 +34,11 @@ class Productvariant extends Model
         return $this->hasMany(Productvariantvalue::class, 'variant_id');
     }
 
+    public function productvariantvalues()
+    {
+        return $this->hasMany(Productvariantvalue::class, 'variant_id');
+    }
+
     // Helper untuk mendapatkan attribute values
     public function attributeValues()
     {
