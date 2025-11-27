@@ -161,46 +161,7 @@
                             </div>
                         </div>
 
-                        <div class="border-t border-gray-100 my-4"></div>
 
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="text-sm text-gray-500">Alamat</div>
-                            <div class="col-span-2">
-                                @if ($user->addresses && $user->addresses->isNotEmpty())
-                                    @php
-                                        $primaryAddress =
-                                            $user->addresses->where('is_primary', true)->first() ??
-                                            $user->addresses->first();
-                                    @endphp
-                                    <div class="text-sm font-medium text-gray-900 mb-2">
-                                        {{ $primaryAddress->recipient_name }}
-                                        <span class="text-xs text-gray-500">({{ $primaryAddress->phone }})</span>
-                                    </div>
-                                    <div class="text-sm text-gray-700">
-                                        {{ $primaryAddress->address_line1 }}
-                                        @if ($primaryAddress->address_line2)
-                                            <br>{{ $primaryAddress->address_line2 }}
-                                        @endif
-                                        <br>{{ $primaryAddress->city }}, {{ $primaryAddress->province }}
-                                        {{ $primaryAddress->postal_code }}
-                                    </div>
-                                    @if ($primaryAddress->is_primary)
-                                        <span
-                                            class="inline-block mt-2 px-2 py-1 bg-pink-50 text-pink-600 text-xs font-medium rounded">
-                                            Alamat Utama
-                                        </span>
-                                    @endif
-                                @else
-                                    <div class="text-sm text-gray-500">
-                                        Belum ada alamat tersimpan
-                                    </div>
-                                @endif
-                                <a href="{{ route('user.addresses') }}"
-                                    class="inline-block mt-3 text-sm text-pink-600 hover:text-pink-700 font-medium">
-                                    Kelola Alamat →
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -228,6 +189,215 @@
             &copy; {{ now()->year }} WeddingMart • Marketplace Persiapan Pernikahan Terpercaya
         </div>
     </footer>
+
+    {{-- Modal Edit Alamat --}}
+    <div id="editAddressModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Edit Alamat</h3>
+                    <button onclick="closeEditAddressModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="editAddressForm" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerima</label>
+                            <input type="text" name="recipient_name" id="edit_recipient_name" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                            <input type="tel" name="phone" id="edit_phone" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
+                        <textarea name="address" id="edit_address" required rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat (Opsional)</label>
+                        <input type="text" name="street" id="edit_street"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="Contoh: Blok A No. 10">
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kota</label>
+                            <input type="text" name="city" id="edit_city" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                            <input type="text" name="province" id="edit_province" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
+                            <input type="text" name="postal_code" id="edit_postal_code" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeEditAddressModal()"
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditAddressModal(id, name, phone, address, street, city, province, postal) {
+            document.getElementById('editAddressForm').action = `/addresses/${id}`;
+            document.getElementById('edit_recipient_name').value = name;
+            document.getElementById('edit_phone').value = phone;
+            document.getElementById('edit_address').value = address;
+            document.getElementById('edit_street').value = street;
+            document.getElementById('edit_city').value = city;
+            document.getElementById('edit_province').value = province;
+            document.getElementById('edit_postal_code').value = postal;
+            document.getElementById('editAddressModal').classList.remove('hidden');
+        }
+
+        function closeEditAddressModal() {
+            document.getElementById('editAddressModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editAddressModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditAddressModal();
+            }
+        });
+    </script>
+
+    {{-- Modal Tambah Alamat --}}
+    <div id="addAddressModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Tambah Alamat Baru</h3>
+                    <button onclick="closeAddAddressModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form action="{{ route('user.address.store') }}" method="POST" class="space-y-4">
+                    @csrf
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerima</label>
+                            <input type="text" name="recipient_name" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                            <input type="tel" name="phone" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
+                        <textarea name="address" required rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="Contoh: Jl. Merdeka No. 123"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Detail Alamat (Opsional)</label>
+                        <input type="text" name="street"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="Contoh: Blok A No. 10, RT 01/RW 05">
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kota</label>
+                            <input type="text" name="city" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                placeholder="Contoh: Jakarta">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                            <input type="text" name="province" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                placeholder="Contoh: DKI Jakarta">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
+                            <input type="text" name="postal_code" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                placeholder="12345">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                        <input type="checkbox" name="is_default" id="is_default" value="1"
+                            class="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                        <label for="is_default" class="text-sm text-gray-700">
+                            Jadikan sebagai alamat utama
+                        </label>
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeAddAddressModal()"
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium">
+                            Simpan Alamat
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openAddAddressModal() {
+            document.getElementById('addAddressModal').classList.remove('hidden');
+        }
+
+        function closeAddAddressModal() {
+            document.getElementById('addAddressModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('addAddressModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddAddressModal();
+            }
+        });
+    </script>
 
 </body>
 

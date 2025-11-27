@@ -47,12 +47,12 @@
     {{-- Back Button --}}
     <div class="bg-white border-b border-gray-100 py-3">
         <div class="container mx-auto px-4 max-w-6xl">
-            <a href="{{ route('checkout.payment') }}"
+            <a href="{{ route('checkout.shipping') }}"
                 class="inline-flex items-center text-pink-600 hover:text-pink-700 text-sm font-medium">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Kembali ke Pembayaran
+                Kembali ke Alamat
             </a>
         </div>
     </div>
@@ -80,23 +80,10 @@
                     <span class="text-sm font-semibold text-pink-600 whitespace-nowrap">Alamat Pengiriman</span>
                 </div>
 
-                <!-- Line 1 -->
+                <!-- Line -->
                 <div class="w-12 h-0.5 bg-pink-400"></div>
 
-                <!-- Step 2 - Completed -->
-                <div class="flex items-center bg-pink-100 rounded-full px-5 py-2.5 gap-2.5">
-                    <div class="w-9 h-9 bg-pink-600 rounded-full flex items-center justify-center text-white shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-semibold text-pink-600 whitespace-nowrap">Metode Pembayaran</span>
-                </div>
-
-                <!-- Line 2 -->
-                <div class="w-12 h-0.5 bg-pink-400"></div>
-
-                <!-- Step 3 - Active -->
+                <!-- Step 2 - Active -->
                 <div class="flex items-center bg-pink-100 rounded-full px-5 py-2.5 gap-2.5">
                     <div class="w-9 h-9 bg-pink-600 rounded-full flex items-center justify-center text-white shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +142,7 @@
             </div>
 
             <!-- Shipping Address Section -->
-            <div class="p-6 border-b border-gray-100">
+            <div class="p-6">
                 <div class="flex items-center mb-4">
                     <svg class="w-5 h-5 text-pink-600 mr-2" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
@@ -175,58 +162,6 @@
                         {{ $address->city }}, {{ $address->province }}<br>
                         Kode Pos: {{ $address->postal_code }}
                     </p>
-                </div>
-            </div>
-
-            <!-- Payment Method Section -->
-            <div class="p-6">
-                <div class="flex items-center mb-4">
-                    <svg class="w-5 h-5 text-pink-600 mr-2" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    <h2 class="text-base font-bold text-gray-900">Metode Pembayaran</h2>
-                </div>
-
-                <div class="bg-pink-50 rounded-lg p-4 flex items-center gap-3">
-                    @if ($paymentMethod === 'bank_transfer')
-                        <div class="w-10 h-10 bg-blue-100 rounded flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900 text-sm">Transfer Bank</p>
-                            <p class="text-xs text-gray-600">BCA, BNI, BRI, Mandiri</p>
-                        </div>
-                    @elseif ($paymentMethod === 'e_wallet')
-                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900 text-sm">E-Wallet</p>
-                            <p class="text-xs text-gray-600">GoPay, OVO, DANA, ShopeePay</p>
-                        </div>
-                    @elseif ($paymentMethod === 'cod')
-                        <div class="w-10 h-10 bg-yellow-100 rounded flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900 text-sm">Bayar di Tempat (COD)</p>
-                            <p class="text-xs text-gray-600">Bayar saat barang diterima</p>
-                        </div>
-                    @endif
                 </div>
             </div>
 

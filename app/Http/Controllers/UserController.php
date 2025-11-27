@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Vendor;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class UserController extends Controller
 {
@@ -29,6 +31,25 @@ class UserController extends Controller
         };
 
         $request->session()->regenerate();
+
+        // If logged-in user is admin (vendor), redirect to vendor dashboard
+        $user = Auth::user();
+        if ($user && $user->role === 'admin') {
+            // create vendor profile if it doesn't exist
+            if (! $user->vendor) {
+                Vendor::create([
+                    'user_id' => $user->id,
+                    'name' => $user->name . ' Store',
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'address' => 'Alamat belum diatur',
+                    'description' => 'Deskripsi toko belum diatur. Silakan update profil vendor Anda.',
+                ]);
+                $user->refresh();
+            }
+
+            return redirect()->route('vendor.dashboard');
+        }
 
         return redirect()->route('home');
     }
