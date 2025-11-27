@@ -122,13 +122,13 @@
 
                 <!-- Success Message -->
                 @if (session('success'))
-                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
-                        <div class=\"flex items-center gap-2\">
-                            <svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">
-                                <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2
-                                    2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" />
+                    <div class="bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg mb-4 max-w-xs">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {{ session('success') }}
+                            <span class="text-xs">{{ session('success') }}</span>
                         </div>
                     </div>
                 @endif

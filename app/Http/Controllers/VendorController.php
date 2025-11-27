@@ -316,14 +316,35 @@ class VendorController extends Controller
             }
         }
 
+        // DEBUG: Log all request data
+        \Log::info('=== PRODUCT STORE DEBUG ===');
+        \Log::info('All request data:', $request->all());
+        \Log::info('Has attributes:', [$request->has('attributes'), is_array($request->get('attributes'))]);
+        \Log::info('Has variants:', [$request->has('variants'), is_array($request->get('variants'))]);
+
         // Handle product variants
-        if ($request->has('attributes') && is_array($request->attributes)) {
-            foreach ($request->attributes as $attributeData) {
+        if ($request->has('attributes') && is_array($request->input('attributes'))) {
+            \Log::info('Attributes received:', $request->input('attributes'));
+
+            // Track attribute names to avoid duplicates
+            $processedAttributeNames = [];
+
+            foreach ($request->input('attributes') as $attributeData) {
                 if (!empty($attributeData['name']) && !empty($attributeData['values'])) {
+                    $attributeName = trim($attributeData['name']);
+
+                    // Skip if attribute name already processed for this product
+                    if (in_array(strtolower($attributeName), $processedAttributeNames)) {
+                        \Log::warning('Skipping duplicate attribute:', ['name' => $attributeName]);
+                        continue;
+                    }
+
                     // Create attribute
                     $attribute = $product->attributes()->create([
-                        'name' => $attributeData['name']
+                        'name' => $attributeName
                     ]);
+
+                    $processedAttributeNames[] = strtolower($attributeName);
 
                     // Create attribute values
                     $values = explode(',', $attributeData['values']);
@@ -337,11 +358,15 @@ class VendorController extends Controller
                     }
                 }
             }
+        } else {
+            \Log::info('No attributes in request or not an array');
         }
 
         // Handle variant combinations
-        if ($request->has('variants') && is_array($request->variants)) {
-            foreach ($request->variants as $variantData) {
+        if ($request->has('variants') && is_array($request->input('variants'))) {
+            \Log::info('Variants received:', $request->input('variants'));
+
+            foreach ($request->input('variants') as $variantData) {
                 if (!empty($variantData['sku'])) {
                     // Create variant
                     $variant = $product->variants()->create([
@@ -349,6 +374,8 @@ class VendorController extends Controller
                         'price' => $variantData['price'] ?? $product->price,
                         'stock' => $variantData['stock'] ?? 0,
                     ]);
+
+                    \Log::info('Variant created:', ['id' => $variant->id, 'sku' => $variant->sku]);
 
                     // Link variant to attribute values
                     if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
@@ -361,12 +388,15 @@ class VendorController extends Controller
                                     $variant->variantvalues()->create([
                                         'value_id' => $attributeValue->id
                                     ]);
+                                    \Log::info('Variant value linked:', ['variant_id' => $variant->id, 'value_id' => $attributeValue->id]);
                                 }
                             }
                         }
                     }
                 }
             }
+        } else {
+            \Log::info('No variants in request or not an array');
         }
 
         return redirect()->route('vendor.products')->with('success', 'Produk berhasil ditambahkan!');
@@ -443,8 +473,15 @@ class VendorController extends Controller
             }
         }
 
+        // DEBUG: Log all request data for update
+        \Log::info('=== PRODUCT UPDATE DEBUG ===');
+        \Log::info('Product ID:', [$product->id]);
+        \Log::info('All request data:', $request->all());
+        \Log::info('Has attributes:', [$request->has('attributes'), is_array($request->get('attributes'))]);
+        \Log::info('Has variants:', [$request->has('variants'), is_array($request->get('variants'))]);
+
         // Handle product variants update
-        if ($request->has('attributes') && is_array($request->attributes)) {
+        if ($request->has('attributes') && is_array($request->input('attributes'))) {
             // Delete old attributes and variants
             foreach ($product->attributes as $oldAttribute) {
                 $oldAttribute->values()->delete();
@@ -456,11 +493,23 @@ class VendorController extends Controller
             }
 
             // Create new attributes
-            foreach ($request->attributes as $attributeData) {
+            $processedAttributeNames = [];
+
+            foreach ($request->input('attributes') as $attributeData) {
                 if (!empty($attributeData['name']) && !empty($attributeData['values'])) {
+                    $attributeName = trim($attributeData['name']);
+
+                    // Skip if attribute name already processed
+                    if (in_array(strtolower($attributeName), $processedAttributeNames)) {
+                        \Log::warning('Skipping duplicate attribute in update:', ['name' => $attributeName]);
+                        continue;
+                    }
+
                     $attribute = $product->attributes()->create([
-                        'name' => $attributeData['name']
+                        'name' => $attributeName
                     ]);
+
+                    $processedAttributeNames[] = strtolower($attributeName);
 
                     $values = explode(',', $attributeData['values']);
                     foreach ($values as $value) {
@@ -475,8 +524,8 @@ class VendorController extends Controller
             }
 
             // Create new variant combinations
-            if ($request->has('variants') && is_array($request->variants)) {
-                foreach ($request->variants as $variantData) {
+            if ($request->has('variants') && is_array($request->input('variants'))) {
+                foreach ($request->input('variants') as $variantData) {
                     if (!empty($variantData['sku'])) {
                         $variant = $product->variants()->create([
                             'sku' => $variantData['sku'],
@@ -527,6 +576,40 @@ class VendorController extends Controller
         $product->delete();
 
         return redirect()->route('vendor.products')->with('success', 'Produk berhasil dihapus!');
+    }
+
+    /**
+     * Delete product image
+     */
+    public function deleteProductImage($id)
+    {
+        $user = Auth::user();
+        $vendor = $user->vendor;
+
+        if (!$vendor) {
+            return response()->json(['success' => false, 'message' => 'Vendor tidak ditemukan'], 403);
+        }
+
+        // Find the image and verify it belongs to vendor's product
+        $image = \App\Models\Productimage::findOrFail($id);
+        $product = $image->product;
+
+        if ($product->vendor_id !== $vendor->id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Check if this is the last image
+        if ($product->images()->count() <= 1) {
+            return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus gambar terakhir'], 400);
+        }
+
+        // Delete from storage
+        Storage::disk('public')->delete($image->image);
+
+        // Delete from database
+        $image->delete();
+
+        return response()->json(['success' => true, 'message' => 'Gambar berhasil dihapus']);
     }
 
     /**

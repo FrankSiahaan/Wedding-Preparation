@@ -7,10 +7,33 @@
 @section('page-subtitle', isset($product) ? 'Perbarui informasi produk' : 'Tambahkan produk baru ke toko Anda')
 
 @section('content')
+    @if (isset($product))
+        <!-- Edit Mode Info -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                <div class="flex-1">
+                    <h4 class="text-sm font-semibold text-blue-900 mb-1">Mode Edit Produk</h4>
+                    <p class="text-xs text-blue-700">Anda sedang mengedit produk. Varian yang sudah ada akan ditampilkan
+                        dengan badge <span
+                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-500 text-white">✓
+                            Tersimpan</span></p>
+                    <p class="text-xs text-blue-600 mt-1">💡 <strong>Tips:</strong> Jika Anda mengubah atribut (nama atau
+                        nilai), varian akan dibuat ulang. Pastikan mengisi ulang harga dan stok untuk varian baru.</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Form -->
     <div class="bg-white rounded-xl border border-gray-100 p-6">
-        <form action="{{ isset($product) ? route('vendor.products.update', $product->id) : route('vendor.products.store') }}"
-            method="POST" enctype="multipart/form-data">
+        <form
+            action="{{ isset($product) ? route('vendor.products.update', $product->id) : route('vendor.products.store') }}"
+            method="POST" enctype="multipart/form-data" id="productForm" onsubmit="return validateAndLogForm(event)">
             @csrf
             @if (isset($product))
                 @method('PUT')
@@ -131,10 +154,70 @@
                 </div>
 
                 <!-- Variants Preview -->
-                <div id="variantsPreview" class="mt-6 hidden">
-                    <h4 class="text-md font-semibold text-gray-900 mb-3">Kombinasi Varian</h4>
+                <div id="variantsPreview"
+                    class="mt-6 {{ isset($product) && $product->variants->count() > 0 ? '' : 'hidden' }}">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-md font-semibold text-gray-900">Kombinasi Varian</h4>
+                        <span id="variantCount"
+                            class="px-3 py-1 bg-pink-100 text-pink-700 text-xs font-medium rounded-full">
+                            {{ isset($product) ? $product->variants->count() : 0 }} varian
+                        </span>
+                    </div>
                     <div class="bg-gray-50 rounded-lg p-4">
                         <div id="variantsTable" class="space-y-3">
+                            @if (isset($product) && $product->variants->count() > 0)
+                                <!-- Display existing variants in edit mode -->
+                                @foreach ($product->variants as $index => $variant)
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                            <!-- Variant Name -->
+                                            <div class="md:col-span-2">
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Varian</label>
+                                                <div
+                                                    class="px-3 py-2 bg-gray-50 rounded text-sm font-medium text-gray-900">
+                                                    {{ $variant->attributeValues->pluck('value')->join(' - ') }}
+                                                </div>
+                                                <input type="hidden" name="variants[{{ $index }}][name]"
+                                                    value="{{ $variant->attributeValues->pluck('value')->join(' - ') }}">
+                                                @foreach ($variant->attributeValues as $attrIndex => $attrValue)
+                                                    <input type="hidden"
+                                                        name="variants[{{ $index }}][attributes][{{ $attrIndex }}][name]"
+                                                        value="{{ $attrValue->attribute->name }}">
+                                                    <input type="hidden"
+                                                        name="variants[{{ $index }}][attributes][{{ $attrIndex }}][value]"
+                                                        value="{{ $attrValue->value }}">
+                                                @endforeach
+                                            </div>
+
+                                            <!-- SKU -->
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">SKU</label>
+                                                <input type="text" name="variants[{{ $index }}][sku]"
+                                                    value="{{ $variant->sku }}"
+                                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                                            </div>
+
+                                            <!-- Price -->
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Harga
+                                                    (Rp)
+                                                </label>
+                                                <input type="number" name="variants[{{ $index }}][price]"
+                                                    value="{{ $variant->price }}" min="0" step="0.01"
+                                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                                            </div>
+
+                                            <!-- Stock -->
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Stok</label>
+                                                <input type="number" name="variants[{{ $index }}][stock]"
+                                                    value="{{ $variant->stock }}" min="0"
+                                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
                             <!-- Variant combinations will be shown here -->
                         </div>
                     </div>
@@ -177,18 +260,44 @@
                     <span id="fileCount">0</span> foto dipilih
                 </div>
 
-                <!-- Image Preview -->
-                <div id="imagePreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    @if (isset($product) && $product->images->count() > 0)
-                        @foreach ($product->images as $image)
-                            <div class="relative group">
-                                <img src="{{ Storage::url($image->image) }}" alt="Product Image"
-                                    class="h-32 w-full object-cover rounded-lg border-2 border-gray-200">
-                                <span
-                                    class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded shadow">Existing</span>
-                            </div>
-                        @endforeach
-                    @endif
+                <!-- Existing Images -->
+                @if (isset($product) && $product->images->count() > 0)
+                    <div class="mt-4">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Gambar Saat Ini:</p>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            @foreach ($product->images as $image)
+                                <div class="relative group">
+                                    <img src="{{ Storage::url($image->image) }}" alt="Product Image"
+                                        class="h-32 w-full object-cover rounded-lg border-2 border-blue-200 shadow-sm">
+                                    <div
+                                        class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition rounded-lg flex items-center justify-center">
+                                        <button type="button" onclick="deleteImage({{ $image->id }})"
+                                            class="opacity-0 group-hover:opacity-100 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-600 transition">
+                                            <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Hapus
+                                        </button>
+                                    </div>
+                                    <span
+                                        class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow">
+                                        <svg class="w-3 h-3 inline-block" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- New Images Preview -->
+                <div id="imagePreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 hidden">
+                    <!-- Preview baru akan ditampilkan di sini -->
                 </div>
             </div>
 
@@ -215,6 +324,110 @@
         let attributeCount = 0;
         let attributes = [];
 
+        // Delete existing image
+        function deleteImage(imageId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus gambar ini?')) {
+                return;
+            }
+
+            fetch(`/vendor/products/images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove image from DOM
+                        event.target.closest('.group').remove();
+                        alert('Gambar berhasil dihapus!');
+                    } else {
+                        alert('Gagal menghapus gambar: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus gambar');
+                });
+        }
+
+        // Validate and log form data before submit
+        function validateAndLogForm(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+
+            console.log('=== FORM SUBMISSION DEBUG ===');
+            console.log('All form data:');
+
+            let attributeData = {};
+            let variantData = {};
+
+            for (let [key, value] of formData.entries()) {
+                console.log(key, ':', value);
+
+                // Collect attribute data
+                if (key.includes('attributes[') && key.includes(']')) {
+                    attributeData[key] = value;
+                }
+
+                // Collect variant data
+                if (key.includes('variants[') && key.includes(']')) {
+                    variantData[key] = value;
+                }
+            }
+
+            console.log('\n=== ATTRIBUTES DATA ===');
+            console.log(attributeData);
+            console.log('Total attribute fields:', Object.keys(attributeData).length);
+
+            console.log('\n=== VARIANTS DATA ===');
+            console.log(variantData);
+            console.log('Total variant fields:', Object.keys(variantData).length);
+
+            // Check DOM
+            const attributeInputs = form.querySelectorAll('input[name*="attributes"]');
+            console.log('\nAttribute inputs in DOM:', attributeInputs.length);
+            attributeInputs.forEach(input => {
+                console.log('  -', input.name, '=', input.value);
+            });
+
+            const variantInputs = form.querySelectorAll('input[name*="variants"]');
+            console.log('\nVariant inputs in DOM:', variantInputs.length);
+
+            if (variantInputs.length === 0) {
+                console.warn('⚠️ WARNING: No variant inputs found in DOM! Did you generate variants?');
+            }
+
+            if (Object.keys(attributeData).length === 0) {
+                console.warn('⚠️ WARNING: No attribute data in FormData! Backend will not receive attributes.');
+            }
+
+            if (Object.keys(variantData).length === 0) {
+                console.warn('⚠️ WARNING: No variant data in FormData! Backend will not receive variants.');
+            }
+
+            // Check if user added attributes but didn't generate variants
+            const attributeContainer = document.getElementById('attributesContainer');
+            const hasAttributeDivs = attributeContainer.querySelectorAll('div[id^="attr_"]').length > 0;
+            const variantsPreview = document.getElementById('variantsPreview');
+            const isVariantsPreviewVisible = !variantsPreview.classList.contains('hidden');
+
+            if (hasAttributeDivs && Object.keys(attributeData).length > 0 && Object.keys(variantData).length === 0) {
+                alert(
+                    '⚠️ Anda telah menambahkan atribut produk tetapi belum membuat varian!\n\nSilakan:\n1. Isi nama dan nilai atribut dengan lengkap\n2. Sistem akan otomatis membuat kombinasi varian\n3. Isi harga dan stok untuk setiap varian\n\nJika tidak ingin menggunakan varian, hapus semua atribut terlebih dahulu.'
+                );
+                console.error('❌ Form submission blocked: Attributes exist but no variants generated');
+                return false; // Prevent form submission
+            }
+
+            console.log('✅ Form validation passed');
+            console.log('Total attributes to send:', Object.keys(attributeData).length);
+            console.log('Total variants to send:', Object.keys(variantData).length);
+            return true; // Allow form submission
+        }
+
         function previewImages(event) {
             const files = Array.from(event.target.files);
             const previewContainer = document.getElementById('imagePreview');
@@ -239,15 +452,16 @@
             // Store selected files
             selectedFiles = files;
 
-            // Clear only new previews (keep existing images if editing)
-            const newPreviews = previewContainer.querySelectorAll('.new-preview');
-            newPreviews.forEach(preview => preview.remove());
+            // Clear preview container
+            previewContainer.innerHTML = '';
 
-            // Show file count
+            // Show container if we have files
             if (files.length > 0) {
+                previewContainer.classList.remove('hidden');
                 fileInfo.classList.remove('hidden');
                 fileCount.textContent = files.length;
             } else {
+                previewContainer.classList.add('hidden');
                 fileInfo.classList.add('hidden');
             }
 
@@ -454,6 +668,8 @@
                 }
             });
 
+            console.log('Attributes collected:', attributes);
+
             // Generate variant combinations
             if (attributes.length > 0) {
                 generateVariantCombinations();
@@ -465,6 +681,7 @@
         function generateVariantCombinations() {
             const variantsTable = document.getElementById('variantsTable');
             const variantsPreview = document.getElementById('variantsPreview');
+            const variantCountBadge = document.getElementById('variantCount');
 
             if (attributes.length === 0) {
                 variantsPreview.classList.add('hidden');
@@ -475,61 +692,130 @@
             const combinations = cartesianProduct(attributes.map(attr => attr.values));
             variantsTable.innerHTML = '';
 
+            console.log('=== GENERATING VARIANTS ===');
+            console.log('Attributes:', attributes);
+            console.log('Total combinations:', combinations.length);
+            console.log('Combinations:', combinations);
+
+            // Update variant count badge
+            variantCountBadge.textContent = `${combinations.length} varian`;
+            variantsPreview.classList.remove('hidden');
+
             combinations.forEach((combination, index) => {
                 const variantName = combination.join(' - ');
                 const sku = generateSKU(combination);
 
                 const variantDiv = document.createElement('div');
                 variantDiv.className = 'bg-white border border-gray-200 rounded-lg p-4';
-                variantDiv.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- Variant Name -->
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Varian</label>
-                            <div class="px-3 py-2 bg-gray-50 rounded text-sm font-medium text-gray-900">
-                                ${variantName}
-                            </div>
-                            <input type="hidden" name="variants[${index}][name]" value="${variantName}">
-                            ${combination.map((val, i) => `
-                                    <input type="hidden" name="variants[${index}][attributes][${i}][name]" value="${attributes[i].name}">
-                                    <input type="hidden" name="variants[${index}][attributes][${i}][value]" value="${val}">
-                                `).join('')}
-                        </div>
-                        
-                        <!-- SKU -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">SKU</label>
-                            <input type="text" 
-                                name="variants[${index}][sku]" 
-                                value="${sku}"
-                                placeholder="SKU"
-                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                        </div>
-                        
-                        <!-- Price -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Harga (Rp)</label>
-                            <input type="number" 
-                                name="variants[${index}][price]" 
-                                placeholder="0"
-                                min="0"
-                                step="0.01"
-                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                        </div>
-                        
-                        <!-- Stock -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Stok</label>
-                            <input type="number" 
-                                name="variants[${index}][stock]" 
-                                placeholder="0"
-                                min="0"
-                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                        </div>
-                    </div>
-                `;
+
+                // Create the HTML structure
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'grid grid-cols-1 md:grid-cols-4 gap-4';
+
+                // Variant Name Column
+                const nameCol = document.createElement('div');
+                nameCol.className = 'md:col-span-2';
+
+                const nameLabel = document.createElement('label');
+                nameLabel.className = 'block text-xs font-medium text-gray-600 mb-1';
+                nameLabel.textContent = 'Varian';
+
+                const nameDisplay = document.createElement('div');
+                nameDisplay.className = 'px-3 py-2 bg-gray-50 rounded text-sm font-medium text-gray-900';
+                nameDisplay.textContent = variantName;
+
+                // Hidden inputs for variant name
+                const nameInput = document.createElement('input');
+                nameInput.type = 'hidden';
+                nameInput.name = `variants[${index}][name]`;
+                nameInput.value = variantName;
+
+                nameCol.appendChild(nameLabel);
+                nameCol.appendChild(nameDisplay);
+                nameCol.appendChild(nameInput);
+
+                // Add attribute hidden inputs
+                combination.forEach((val, i) => {
+                    const attrNameInput = document.createElement('input');
+                    attrNameInput.type = 'hidden';
+                    attrNameInput.name = `variants[${index}][attributes][${i}][name]`;
+                    attrNameInput.value = attributes[i].name;
+                    nameCol.appendChild(attrNameInput);
+
+                    const attrValueInput = document.createElement('input');
+                    attrValueInput.type = 'hidden';
+                    attrValueInput.name = `variants[${index}][attributes][${i}][value]`;
+                    attrValueInput.value = val;
+                    nameCol.appendChild(attrValueInput);
+                });
+
+                gridDiv.appendChild(nameCol);
+
+                // SKU Column
+                const skuCol = document.createElement('div');
+                const skuLabel = document.createElement('label');
+                skuLabel.className = 'block text-xs font-medium text-gray-600 mb-1';
+                skuLabel.textContent = 'SKU';
+                const skuInput = document.createElement('input');
+                skuInput.type = 'text';
+                skuInput.name = `variants[${index}][sku]`;
+                skuInput.value = sku;
+                skuInput.placeholder = 'SKU';
+                skuInput.className =
+                    'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent';
+                skuCol.appendChild(skuLabel);
+                skuCol.appendChild(skuInput);
+                gridDiv.appendChild(skuCol);
+
+                // Price Column
+                const priceCol = document.createElement('div');
+                const priceLabel = document.createElement('label');
+                priceLabel.className = 'block text-xs font-medium text-gray-600 mb-1';
+                priceLabel.textContent = 'Harga (Rp)';
+                const priceInput = document.createElement('input');
+                priceInput.type = 'number';
+                priceInput.name = `variants[${index}][price]`;
+                priceInput.value = document.getElementById('price') ? document.getElementById('price').value : 0;
+                priceInput.placeholder = '0';
+                priceInput.min = '0';
+                priceInput.step = '0.01';
+                priceInput.className =
+                    'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent';
+                priceCol.appendChild(priceLabel);
+                priceCol.appendChild(priceInput);
+                gridDiv.appendChild(priceCol);
+
+                // Stock Column
+                const stockCol = document.createElement('div');
+                const stockLabel = document.createElement('label');
+                stockLabel.className = 'block text-xs font-medium text-gray-600 mb-1';
+                stockLabel.textContent = 'Stok';
+                const stockInput = document.createElement('input');
+                stockInput.type = 'number';
+                stockInput.name = `variants[${index}][stock]`;
+                stockInput.value = document.getElementById('stock') ? document.getElementById('stock').value : 0;
+                stockInput.placeholder = '0';
+                stockInput.min = '0';
+                stockInput.className =
+                    'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent';
+                stockCol.appendChild(stockLabel);
+                stockCol.appendChild(stockInput);
+                gridDiv.appendChild(stockCol);
+
+                // Append grid to variant div
+                variantDiv.appendChild(gridDiv);
                 variantsTable.appendChild(variantDiv);
             });
+
+            // Log completion
+            console.log('✅ Variants generated successfully!');
+            console.log('Total variant divs in DOM:', document.querySelectorAll('#variantsTable > div').length);
+            console.log('Variant input fields created:');
+            console.log('  - SKU inputs:', document.querySelectorAll('input[name*="variants"][name*="sku"]').length);
+            console.log('  - Price inputs:', document.querySelectorAll('input[name*="variants"][name*="price"]').length);
+            console.log('  - Stock inputs:', document.querySelectorAll('input[name*="variants"][name*="stock"]').length);
+            console.log('  - Attribute hidden inputs:', document.querySelectorAll(
+                'input[name*="variants"][name*="attributes"]').length);
 
             variantsPreview.classList.remove('hidden');
         }
@@ -625,41 +911,35 @@
                     });
                 @endforeach
 
-                // Trigger variant generation with loaded attributes
-                setTimeout(() => {
-                    updateVariants();
+                // DO NOT trigger updateVariants on initial load in edit mode
+                // Variants are already displayed server-side
+                // Only update attributes array for later changes
+                attributes = [];
+                const container = document.getElementById('attributesContainer');
+                const attributeDivs = container.querySelectorAll('div[id^="attr_"]');
 
-                    // Load existing variant prices and stocks
-                    @if ($product->variants->count() > 0)
-                        const variantData = {
-                            @foreach ($product->variants as $variant)
-                                '{{ $variant->attributeValues->pluck('value')->join(' - ') }}': {
-                                    sku: '{{ $variant->sku }}',
-                                    price: '{{ $variant->price }}',
-                                    stock: '{{ $variant->stock }}'
-                                },
-                            @endforeach
-                        };
+                attributeDivs.forEach((div) => {
+                    const nameInput = div.querySelector('input[name*="[name]"]');
+                    const valuesInput = div.querySelector('input[name*="[values]"]');
 
-                        // Wait for variants to be generated
-                        setTimeout(() => {
-                            const variantInputs = document.querySelectorAll('#variantsTable > div');
-                            variantInputs.forEach(variantDiv => {
-                                const variantName = variantDiv.querySelector(
-                                    'div[class*="font-medium"]').textContent.trim();
-                                if (variantData[variantName]) {
-                                    const data = variantData[variantName];
-                                    variantDiv.querySelector('input[name*="[sku]"]').value =
-                                        data.sku;
-                                    variantDiv.querySelector('input[name*="[price]"]')
-                                        .value = data.price;
-                                    variantDiv.querySelector('input[name*="[stock]"]')
-                                        .value = data.stock;
-                                }
+                    if (nameInput && valuesInput && nameInput.value && valuesInput.value) {
+                        const values = valuesInput.value.split(',').map(v => v.trim()).filter(v => v);
+                        if (values.length > 0) {
+                            attributes.push({
+                                name: nameInput.value.trim(),
+                                values: values
                             });
-                        }, 100);
-                    @endif
-                }, 100);
+                        }
+                    }
+                });
+
+                console.log('📝 Loaded attributes for edit mode:', attributes);
+                console.log('✅ Edit mode initialized');
+                console.log('📦 Existing variants:', {{ $product->variants->count() }} +
+                    ' variants are displayed');
+
+                // Note: Existing variants are already displayed via server-side rendering
+                // No need to regenerate them via JavaScript on initial load
             });
         @endif
     </script>
