@@ -5,12 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Review;
 use App\Models\Transaction;
 use App\Models\Orderitems;
+use App\Interfaces\ProductRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
 {
+    protected ProductRepositoryInterface $productRepository;
+
+    public function __construct(ProductRepositoryInterface $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
     /**
      * Show the review form for a specific transaction
      */
@@ -106,6 +113,9 @@ class ReviewController extends Controller
                         'images' => !empty($images) ? $images : null,
                     ]);
                 }
+
+                // Update product rating
+                $this->productRepository->updateRating($reviewData['product_id']);
             }
 
             // Get the first product ID to redirect to its detail page

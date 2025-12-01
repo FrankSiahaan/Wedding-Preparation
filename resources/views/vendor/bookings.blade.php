@@ -1,8 +1,8 @@
 @extends('vendor.layout')
 
-@section('title', 'Booking Request')
+@section('title', 'Daftar Pesanan')
 
-@section('page-title', 'Booking Request')
+@section('page-title', 'Daftar Pesanan')
 
 @section('page-subtitle', 'Kelola pesanan yang masuk untuk produk Anda')
 
@@ -14,66 +14,84 @@
                 class="border-b-2 {{ !request('status') ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 font-medium text-sm">
                 Semua Pesanan
             </a>
-            <a href="{{ route('vendor.bookings', ['status' => 'pending']) }}"
-                class="border-b-2 {{ request('status') == 'pending' ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 font-medium text-sm">
-                Menunggu
+            <a href="{{ route('vendor.bookings', ['status' => 'proses']) }}"
+                class="border-b-2 {{ request('status') == 'proses' ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 font-medium text-sm">
+                Diproses
             </a>
-            <a href="{{ route('vendor.bookings', ['status' => 'completed']) }}"
-                class="border-b-2 {{ request('status') == 'completed' ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 font-medium text-sm">
+            <a href="{{ route('vendor.bookings', ['status' => 'berhasil']) }}"
+                class="border-b-2 {{ request('status') == 'berhasil' ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 font-medium text-sm">
                 Selesai
-            </a>
-            <a href="{{ route('vendor.bookings', ['status' => 'cancelled']) }}"
-                class="border-b-2 {{ request('status') == 'cancelled' ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 font-medium text-sm">
-                Dibatalkan
             </a>
         </nav>
     </div>
 
-    <!-- Bookings Table -->
+    <!-- Orders List -->
     @if ($orders->count() > 0)
-        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            ID Transaksi</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Pelanggan</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Produk</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Jumlah</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($orders as $order)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                #{{ $order->transaction_id }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $order->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ $order->transaction->user->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $order->transaction->user->email }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center">
-                                    @if ($order->product->images->count() > 0)
-                                        <img src="{{ Storage::url($order->product->images->first()->image_url) }}"
-                                            alt="{{ $order->product->name }}" class="h-10 w-10 object-cover rounded mr-3">
+        <div class="space-y-4">
+            @foreach ($orders as $order)
+                @php
+                    // Calculate vendor's items only
+                    $vendorItems = $order->orderitems->filter(function ($item) use ($vendor) {
+                        return $item->product->vendor_id == $vendor->id;
+                    });
+                    $totalVendor = $vendorItems->sum(function ($item) {
+                        return $item->quantity * $item->price;
+                    });
+                @endphp
+                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                    <!-- Order Header -->
+                    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div>
+                                <span class="text-xs text-gray-500">Order ID:</span>
+                                <span
+                                    class="text-sm font-semibold text-gray-900">#{{ $order->order_id ?? $order->id }}</span>
+                            </div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div>
+                                <span class="text-xs text-gray-500">Tanggal:</span>
+                                <span class="text-sm text-gray-900">{{ $order->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div>
+                                <span class="text-xs text-gray-500">Pelanggan:</span>
+                                <span class="text-sm font-medium text-gray-900">{{ $order->user->name }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            @if ($order->payment_status == 'paid')
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Terbayar
+                                </span>
+                            @else
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Pending
+                                </span>
+                            @endif
+
+                            @if ($order->oder_status == 'berhasil')
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Selesai
+                                </span>
+                            @else
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Diproses
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Order Items (Vendor's products only) -->
+                    <div class="px-6 py-4">
+                        <div class="space-y-3">
+                            @foreach ($vendorItems->take(2) as $item)
+                                <div class="flex items-center space-x-4">
+                                    @if ($item->product->images->count() > 0)
+                                        <img src="{{ Storage::url($item->product->images->first()->image) }}"
+                                            alt="{{ $item->product->name }}" class="h-16 w-16 object-cover rounded-lg">
                                     @else
-                                        <div class="h-10 w-10 bg-gray-200 rounded mr-3 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                        <div class="h-16 w-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -81,47 +99,45 @@
                                             </svg>
                                         </div>
                                     @endif
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ $order->product->name }}</div>
-                                        <div class="text-sm text-gray-500">Rp
-                                            {{ number_format($order->price, 0, ',', '.') }}</div>
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-sm font-medium text-gray-900 truncate">{{ $item->product->name }}
+                                        </h4>
+                                        <p class="text-xs text-gray-500">Jumlah: {{ $item->quantity }} x Rp
+                                            {{ number_format($item->price, 0, ',', '.') }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-semibold text-gray-900">Rp
+                                            {{ number_format($item->quantity * $item->price, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $order->quantity }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                Rp {{ number_format($order->price * $order->quantity, 0, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if ($order->transaction->status == 'pending')
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        Menunggu
-                                    </span>
-                                @elseif($order->transaction->status == 'completed')
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Selesai
-                                    </span>
-                                @elseif($order->transaction->status == 'cancelled')
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        Dibatalkan
-                                    </span>
-                                @else
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        {{ ucfirst($order->transaction->status) }}
-                                    </span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                            @endforeach
+
+                            @if ($vendorItems->count() > 2)
+                                <p class="text-sm text-gray-500">+{{ $vendorItems->count() - 2 }} produk lainnya</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Order Footer -->
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                        <div>
+                            <span class="text-sm text-gray-600">Total untuk Anda:</span>
+                            <span class="ml-2 text-lg font-bold text-pink-600">Rp
+                                {{ number_format($totalVendor, 0, ',', '.') }}</span>
+                        </div>
+                        <a href="{{ route('vendor.bookings.detail', $order->id) }}"
+                            class="inline-flex items-center px-4 py-2 border border-pink-500 text-pink-600 hover:bg-pink-50 rounded-lg text-sm font-medium transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Lihat Detail
+                        </a>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         <!-- Pagination -->
@@ -143,67 +159,6 @@
                     Pesanan akan muncul di sini ketika pelanggan membeli produk Anda.
                 @endif
             </p>
-        </div>
-    @endif
-
-    <!-- Summary Cards -->
-    @if ($orders->count() > 0)
-        <div class="grid grid-cols-3 gap-6 mt-6">
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-pink-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Pesanan</dt>
-                            <dd class="text-2xl font-semibold text-gray-900">{{ $orders->total() }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Item</dt>
-                            <dd class="text-2xl font-semibold text-gray-900">{{ $orders->sum('quantity') }}
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-gray-100 p-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Nilai</dt>
-                            <dd class="text-2xl font-semibold text-gray-900">Rp
-                                {{ number_format($orders->sum(function ($order) {return $order->price * $order->quantity;}),0,',','.') }}
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
         </div>
     @endif
 @endsection

@@ -191,6 +191,23 @@
 
                                 {{-- Action Buttons --}}
                                 <div class="flex flex-wrap gap-2">
+                                    {{-- Update Payment Status Button (if pending) --}}
+                                    @if ($transaction->payment_status === 'pending')
+                                        <form action="{{ route('payment.force.update', $transaction->id) }}"
+                                            method="POST" class="flex-1 min-w-[170px]">
+                                            @csrf
+                                            <button type="submit"
+                                                class="w-full px-4 py-2 border-2 border-orange-500 text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                Update Payment Status
+                                            </button>
+                                        </form>
+                                    @endif
+
                                     @if ($transaction->oder_status == 'proses')
                                         {{-- Tandai Selesai Button --}}
                                         <form action="{{ route('user.order.complete', $transaction->id) }}"

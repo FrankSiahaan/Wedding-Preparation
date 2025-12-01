@@ -88,13 +88,21 @@
                 {{-- Vendor Avatar & Info --}}
                 <div class="flex gap-4 items-start">
                     {{-- Avatar --}}
-                    <div
-                        class="w-24 h-24 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center shrink-0 ring-4 ring-pink-50">
-                        <svg class="w-12 h-12 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                    </div>
+                    @if ($vendor->logo)
+                        <div class="w-24 h-24 rounded-full overflow-hidden shrink-0 ring-4 ring-pink-50 shadow-md">
+                            <img src="{{ Storage::url($vendor->logo) }}" alt="{{ $vendor->name }}"
+                                class="w-full h-full object-cover">
+                        </div>
+                    @else
+                        <div
+                            class="w-24 h-24 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center shrink-0 ring-4 ring-pink-50">
+                            <svg class="w-12 h-12 text-pink-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                    @endif
 
                     {{-- Vendor Details --}}
                     <div class="flex-1">
@@ -174,8 +182,7 @@
 
                 @foreach ($products as $product)
                     {{-- Product Card --}}
-                    <article
-                        class="bg-white rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                    <article class="bg-white rounded-xl overflow-hidden hover:shadow-md transition-shadow">
                         <a href="{{ route('product.detail', $product->id) }}" class="block">
                             <div class="aspect-[3/2] overflow-hidden">
                                 @if ($product->images && $product->images->count() > 0)
