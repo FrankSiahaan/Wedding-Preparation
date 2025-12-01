@@ -46,6 +46,7 @@ Route::middleware(['auth', 'vendor'])->prefix('vendor')->group(function () {
 
     // Booking Management
     Route::get('/bookings', [VendorController::class, 'bookings'])->name('vendor.bookings');
+    Route::get('/bookings/{id}', [VendorController::class, 'bookingDetail'])->name('vendor.bookings.detail');
 });
 
 // Vendor Public Routes (Must be after specific routes)
@@ -89,6 +90,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [TransactionController::class, 'index'])->name('user.orders');
     Route::get('/orders/{id}', [TransactionController::class, 'show'])->name('user.order.detail');
     Route::post('/orders/{id}/complete', [TransactionController::class, 'markAsCompleted'])->name('user.order.complete');
+
+    // Check payment status (for development/testing)
+    Route::get('/payment/check/{orderId}', [TransactionController::class, 'checkPaymentStatus'])->name('payment.check');
+    Route::post('/payment/force-update/{id}', [TransactionController::class, 'forceUpdatePaymentStatus'])->name('payment.force.update');
 
     // Reviews
     Route::get('/orders/{id}/review', [ReviewController::class, 'create'])->name('user.review.create');

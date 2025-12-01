@@ -164,22 +164,6 @@
 
                     </div>
                 </div>
-
-                {{-- Stats Cards --}}
-                <div class="grid grid-cols-3 gap-4 mt-6">
-                    <div class="bg-white rounded-lg border border-gray-100 p-4 text-center">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
-                        <div class="text-xs text-gray-500">Total Pesanan</div>
-                    </div>
-                    <div class="bg-white rounded-lg border border-gray-100 p-4 text-center">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
-                        <div class="text-xs text-gray-500">Menunggu Konfirmasi</div>
-                    </div>
-                    <div class="bg-white rounded-lg border border-gray-100 p-4 text-center">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
-                        <div class="text-xs text-gray-500">Selesai</div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>

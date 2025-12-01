@@ -187,10 +187,6 @@
                     <!-- 2 → 3 → 4 → 6 kolom -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5">
                         @forelse($featuredProducts as $product)
-                            @php
-                                $avgRating = $product->reviews->avg('rating') ?? 0;
-                                $totalReviews = $product->reviews->count();
-                            @endphp
                             <article
                                 class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                                 <a href="{{ route('product.detail', $product->id) }}">
@@ -211,13 +207,15 @@
                                     <div class="p-3">
                                         <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
                                             <span
-                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
+                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full {{ $product->avg_rating > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600' }}">
                                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                                                     <path
                                                         d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                                </svg>{{ number_format($avgRating, 1) }}
+                                                </svg>{{ number_format($product->avg_rating ?? 0, 1) }}
                                             </span>
-                                            <span class="text-gray-500">({{ $totalReviews }} ulasan)</span>
+                                            @if ($product->total_review > 0)
+                                                <span class="text-gray-500">({{ $product->total_review }} ulasan)</span>
+                                            @endif
                                         </div>
                                         <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug">
                                             {{ Str::limit($product->name, 50) }}</h3>

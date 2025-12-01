@@ -87,7 +87,7 @@ class VendorController extends Controller
     {
         // Load vendor with products and calculate stats from actual database relations
         $vendor = Vendor::with(['products' => function ($query) {
-            $query->with(['images', 'reviews', 'orderitems'])->where('is_active', true);
+            $query->with(['images', 'reviews', 'orderitems'])->where('is_active', 1);
         }])->findOrFail($id);
 
         // Calculate vendor stats from actual relations
@@ -673,21 +673,50 @@ class VendorController extends Controller
             return redirect()->route('home')->with('error', 'Profil vendor tidak ditemukan.');
         }
 
-        // Get orders for vendor's products with status filter
-        $query = \App\Models\Orderitems::with(['transaction.user', 'product.images'])
-            ->whereHas('product', function ($q) use ($vendor) {
-                $q->where('vendor_id', $vendor->id);
+        // Get transactions that contain vendor's products
+        $query = \App\Models\Transaction::with(['orderitems.product.images', 'orderitems.variant', 'user', 'address'])
+            ->whereHas('orderitems', function ($q) use ($vendor) {
+                $q->whereHas('product', function ($q2) use ($vendor) {
+                    $q2->where('vendor_id', $vendor->id);
+                });
             });
 
-        // Filter by status if provided
+        // Filter by order status if provided
         if (request('status')) {
-            $query->whereHas('transaction', function ($q) {
-                $q->where('status', request('status'));
-            });
+            $query->where('oder_status', request('status'));
         }
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(20);
 
         return view('vendor.bookings', compact('vendor', 'orders'));
+    }
+
+    public function bookingDetail($id)
+    {
+        $user = Auth::user();
+        $vendor = $user->vendor;
+
+        if (!$vendor) {
+            return redirect()->route('home')->with('error', 'Profil vendor tidak ditemukan.');
+        }
+
+        // Get transaction with vendor's products only
+        $transaction = \App\Models\Transaction::with([
+            'orderitems' => function ($q) use ($vendor) {
+                $q->whereHas('product', function ($q2) use ($vendor) {
+                    $q2->where('vendor_id', $vendor->id);
+                })->with(['product.images', 'variant.attributeValues.attribute']);
+            },
+            'user',
+            'address'
+        ])
+            ->whereHas('orderitems', function ($q) use ($vendor) {
+                $q->whereHas('product', function ($q2) use ($vendor) {
+                    $q2->where('vendor_id', $vendor->id);
+                });
+            })
+            ->findOrFail($id);
+
+        return view('vendor.booking-detail', compact('vendor', 'transaction'));
     }
 }

@@ -441,6 +441,36 @@ class TransactionController extends Controller
             return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan');
         }
 
+        // Update payment status based on transaction status from redirect
+        // This is a fallback in case webhook notification is not received
+        if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
+            // Check status with Midtrans API
+            try {
+                \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+                \Midtrans\Config::$isProduction = config('midtrans.isProduction');
+
+                $status = \Midtrans\Transaction::status($orderId);
+
+                Log::info('Payment Finish - Checking status', [
+                    'order_id' => $orderId,
+                    'transaction_status' => $status->transaction_status,
+                    'fraud_status' => $status->fraud_status ?? 'accept'
+                ]);
+
+                if (
+                    $status->transaction_status == 'settlement' ||
+                    ($status->transaction_status == 'capture' && $status->fraud_status == 'accept')
+                ) {
+                    $transaction->update([
+                        'payment_status' => 'paid',
+                        'oder_status' => 'proses'
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Error checking payment status: ' . $e->getMessage());
+            }
+        }
+
         // Redirect to success page
         return redirect()->route('checkout.success', ['transaction' => $transaction->id]);
     }
@@ -453,6 +483,41 @@ class TransactionController extends Controller
         $transaction = Transaction::with(['orderitems.product', 'address'])
             ->where('user_id', Auth::id())
             ->findOrFail($transactionId);
+
+        // Check payment status from Midtrans if still pending
+        if ($transaction->payment_status === 'pending') {
+            try {
+                \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+                \Midtrans\Config::$isProduction = config('midtrans.isProduction');
+
+                $status = \Midtrans\Transaction::status($transaction->order_id);
+
+                Log::info('Order Success Page - Checking payment status', [
+                    'order_id' => $transaction->order_id,
+                    'midtrans_status' => $status->transaction_status,
+                    'fraud_status' => $status->fraud_status ?? 'accept'
+                ]);
+
+                // Update payment status based on Midtrans response
+                if (
+                    $status->transaction_status == 'settlement' ||
+                    ($status->transaction_status == 'capture' && ($status->fraud_status ?? 'accept') == 'accept')
+                ) {
+                    $transaction->update([
+                        'payment_status' => 'paid',
+                        'oder_status' => 'proses'
+                    ]);
+
+                    // Reload transaction with updated data
+                    $transaction = $transaction->fresh(['orderitems.product', 'address']);
+
+                    Log::info('Payment status updated to paid', ['order_id' => $transaction->order_id]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Error checking payment status on success page: ' . $e->getMessage());
+                // Continue showing page even if check fails
+            }
+        }
 
         return view('CheckOut.pembayaran_berhasil', compact('transaction'));
     }
@@ -483,6 +548,89 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             Log::error('Mark as completed error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan');
+        }
+    }
+
+    /**
+     * Check payment status manually (useful for development/testing)
+     */
+    public function checkPaymentStatus($orderId)
+    {
+        try {
+            // Configure Midtrans
+            \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+            \Midtrans\Config::$isProduction = config('midtrans.isProduction');
+
+            // Get status from Midtrans
+            $status = \Midtrans\Transaction::status($orderId);
+
+            // Find transaction
+            $transaction = Transaction::where('order_id', $orderId)->first();
+
+            if (!$transaction) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaction not found'
+                ], 404);
+            }
+
+            $oldStatus = $transaction->payment_status;
+
+            // Update based on Midtrans status
+            if (
+                $status->transaction_status == 'settlement' ||
+                ($status->transaction_status == 'capture' && $status->fraud_status == 'accept')
+            ) {
+                $transaction->update([
+                    'payment_status' => 'paid',
+                    'oder_status' => 'proses'
+                ]);
+            } elseif ($status->transaction_status == 'pending') {
+                $transaction->update(['payment_status' => 'pending']);
+            } elseif ($status->transaction_status == 'deny') {
+                $transaction->update(['payment_status' => 'failed']);
+            } elseif ($status->transaction_status == 'expire') {
+                $transaction->update(['payment_status' => 'expired']);
+            } elseif ($status->transaction_status == 'cancel') {
+                $transaction->update(['payment_status' => 'cancelled']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment status updated',
+                'data' => [
+                    'order_id' => $orderId,
+                    'old_status' => $oldStatus,
+                    'new_status' => $transaction->fresh()->payment_status,
+                    'midtrans_status' => $status->transaction_status,
+                    'fraud_status' => $status->fraud_status ?? 'N/A'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Check payment status error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Force update payment status to paid (development only)
+     */
+    public function forceUpdatePaymentStatus($id)
+    {
+        try {
+            $transaction = Transaction::findOrFail($id);
+
+            $transaction->update([
+                'payment_status' => 'paid'
+            ]);
+
+            return redirect()->back()->with('success', 'Payment status berhasil diupdate menjadi paid');
+        } catch (\Exception $e) {
+            Log::error('Force update payment status error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

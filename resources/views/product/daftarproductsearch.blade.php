@@ -169,14 +169,18 @@
                                 </div>
                                 <div class="p-4">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="inline-flex items-center gap-1 text-xs font-medium text-yellow-600">
+                                        <span
+                                            class="inline-flex items-center gap-1 text-xs font-medium {{ $product->avg_rating > 0 ? 'text-yellow-600' : 'text-gray-500' }}">
                                             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                                 <path
                                                     d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
                                             </svg>
-                                            {{ $product->avg_rating }}
+                                            {{ number_format($product->avg_rating ?? 0, 1) }}
                                         </span>
-                                        <span class="text-xs text-gray-500">(73)</span>
+                                        @if ($product->total_review > 0)
+                                            <span class="text-xs text-gray-500">({{ $product->total_review }}
+                                                ulasan)</span>
+                                        @endif
                                     </div>
                                     <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2">
                                         {{ $product->name }}</h3>
