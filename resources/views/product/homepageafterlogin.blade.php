@@ -24,7 +24,7 @@
                     </a>
 
                     <!-- Search pill -->
-                    <div class="hidden md:flex flex-1 max-w-2xl mx-4">
+                    {{-- <div class="hidden md:flex flex-1 max-w-2xl mx-4">
                         <div class="relative w-full">
                             <input type="text" placeholder="Cari gaun pengantin, dekorasi, fotografi, dan lainnya..."
                                 class="w-full pl-9 pr-3 py-2 rounded-full text-sm bg-pink-50/70 placeholder-pink-400 border border-pink-100 focus:border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-200" />
@@ -34,7 +34,7 @@
                                     d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" />
                             </svg>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Actions -->
                     <div class="flex items-center gap-3">
@@ -84,9 +84,6 @@
                                 <a href="{{ route('product') }}"
                                     class="px-6 py-2.5 bg-pink-600 text-white font-semibold rounded-xl hover:bg-pink-700 transition-colors shadow-md text-sm">Mulai
                                     Belanja</a>
-                                <button
-                                    class="px-6 py-2.5 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm">Lihat
-                                    Sebagai Vendor</button>
                             </div>
                         </div>
                         <div class="relative">

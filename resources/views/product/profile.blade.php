@@ -263,17 +263,47 @@
                 {{-- Right Side - Profile Picture --}}
                 <div class="lg:w-64 flex flex-col items-center justify-start pt-3 border-l border-gray-200 pl-6">
                     <div class="w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-3">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80"
-                            alt="Profile Picture" class="w-full h-full object-cover">
+                        @if ($user->profile_picture)
+                            <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Profile Picture"
+                                class="w-full h-full object-cover" id="previewImage">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-pink-100">
+                                <svg class="w-12 h-12 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        @endif
                     </div>
-                    <button type="button"
-                        class="px-4 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded text-xs transition-colors">
-                        Pilih Gambar
-                    </button>
+
+                    <form action="{{ route('user.profile.picture.update') }}" method="POST"
+                        enctype="multipart/form-data" class="w-full">
+                        @csrf
+
+                        <input type="file" name="profile_picture" id="profilePictureInput" accept="image/*"
+                            class="hidden" />
+
+                        <button type="button" onclick="document.getElementById('profilePictureInput').click()"
+                            class="w-full px-4 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded text-xs transition-colors">
+                            Pilih Gambar
+                        </button>
+
+                        <button type="submit" id="uploadButton"
+                            class="w-full mt-2 px-4 py-1.5 bg-pink-600 hover:bg-pink-700 text-white rounded text-xs transition-colors hidden">
+                            Upload
+                        </button>
+                    </form>
+
                     <div class="mt-3 text-center">
                         <p class="text-[10px] text-gray-500">Ukuran gambar: maks. 1 MB</p>
                         <p class="text-[10px] text-gray-500">Format gambar: .JPEG, .PNG</p>
                     </div>
+
+                    @if ($errors->has('profile_picture'))
+                        <div class="mt-3 w-full p-2 bg-red-50 border border-red-200 rounded text-[10px] text-red-600">
+                            {{ $errors->first('profile_picture') }}
+                        </div>
+                    @endif
                 </div>
 
             </div>
@@ -288,6 +318,37 @@
             &copy; {{ now()->year }} WeddingMart • Marketplace Persiapan Pernikahan Terpercaya
         </div>
     </footer>
+
+    {{-- Script untuk preview gambar --}}
+    <script>
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const previewImage = document.getElementById('previewImage');
+
+        if (profilePictureInput) {
+            profilePictureInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Tampilkan preview
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        if (!previewImage) {
+                            // Jika elemen preview tidak ada, buat baru
+                            const container = document.querySelector('.w-24.h-24');
+                            container.innerHTML =
+                                `<img src="${event.target.result}" alt="Preview" class="w-full h-full object-cover" id="previewImage">`;
+                        } else {
+                            previewImage.src = event.target.result;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+
+                    // Tampilkan tombol upload
+                    uploadButton.classList.remove('hidden');
+                }
+            });
+        }
+    </script>
 
 </body>
 

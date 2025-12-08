@@ -1,20 +1,22 @@
 <?php
 
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\AddressController;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\ReviewController;
-use Illuminate\Routing\Route as RoutingRoute;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\ProductController;
+use Illuminate\Routing\Route as RoutingRoute;
+use App\Http\Controllers\TransactionController;
 
 
 // Auth Routes
 Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'storelogin'])->name('login.store');
 Route::get('/register', [UserController::class, 'register'])->name('register');
+Route::post('/register', [UserController::class, 'store'])->name('register.store');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Public Product Routes
@@ -26,6 +28,7 @@ Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('product.
 // Vendor Auth Routes (Must be before vendor/{id} route)
 Route::get('/vendor/login', [VendorController::class, 'showLoginForm'])->name('vendor.login');
 Route::post('/vendor/login', [VendorController::class, 'login'])->name('vendor.login.store');
+Route::post('/vendor/logout', [VendorController::class, 'logout'])->name('vendor.logout');
 
 // Vendor Dashboard Routes (Admin only)
 Route::middleware(['auth', 'vendor'])->prefix('vendor')->group(function () {
@@ -62,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::post('/profile/picture', [UserController::class, 'updateProfilePicture'])->name('user.profile.picture.update');
 
     // User Addresses
     Route::get('/addresses', [UserController::class, 'addresses'])->name('user.addresses');
@@ -102,3 +106,6 @@ Route::middleware('auth')->group(function () {
 
 // Midtrans Notification Webhook (outside auth middleware)
 Route::post('/midtrans/notification', [TransactionController::class, 'handleNotification'])->name('midtrans.notification');
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use App\Interfaces\ProductRepositoryInterface;
 
 class ProductController extends Controller
 {
@@ -31,8 +32,15 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = $this->productRepository->getAll();
-        $categories = Category::all();
+        // $products = $this->productRepository->getAll();
+        // $categories = Category::all();
+        $response = Http::get('http://api-product.test/api/products');
+
+        // Convert array to collection of objects
+        $products = $response->json()['products'];
+
+        $categories = $response->json()['category'];
+
         return view('product.daftarproduct', compact('products', 'categories'));
     }
 

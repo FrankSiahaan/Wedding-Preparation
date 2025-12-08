@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\Vendor;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class UserController extends Controller
@@ -61,6 +62,39 @@ class UserController extends Controller
         return view('auth.register');
     }
 
+    public function store(Request $request)
+    {
+        // Validasi input dari form registrasi
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'terms' => ['required', 'accepted'],
+        ], [
+            'name.required' => 'Nama lengkap harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'password.required' => 'Password harus diisi',
+            'password.min' => 'Password minimal 8 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+            'terms.required' => 'Anda harus menyetujui Syarat & Ketentuan',
+        ]);
+
+        // Buat user baru
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'password' => bcrypt($validated['password']),
+            'role' => 'customer', // Default role untuk customer
+        ]);
+
+        // Redirect ke login dengan pesan sukses
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login dengan email dan password Anda.');
+    }
+
     public function profile()
     {
         $user = Auth::user();
@@ -93,6 +127,37 @@ class UserController extends Controller
         $user = Auth::user();
         $addresses = $user->addresses;
         return view('user.addresses', compact('addresses'));
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:1024', // max 1MB
+        ], [
+            'profile_picture.required' => 'Silakan pilih gambar',
+            'profile_picture.image' => 'File harus berupa gambar',
+            'profile_picture.mimes' => 'Format gambar harus JPEG, PNG, JPG, atau GIF',
+            'profile_picture.max' => 'Ukuran gambar maksimal 1 MB',
+        ]);
+
+        $user = Auth::user();
+
+        // Hapus gambar lama jika ada
+        if ($user->profile_picture) {
+            $oldPath = public_path('storage/' . $user->profile_picture);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+
+        // Upload gambar baru
+        $file = $request->file('profile_picture');
+        $path = $file->store('profile_pictures', 'public');
+
+        // Update user profile picture
+        $user->update(['profile_picture' => $path]);
+
+        return back()->with('success', 'Foto profil berhasil diperbarui');
     }
 
     public function logout(Request $request)

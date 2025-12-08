@@ -99,11 +99,11 @@
                                     </label>
                                     @foreach ($categories as $category)
                                         <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input type="radio" name="kategori" value="{{ $category->id }}"
-                                                {{ request('kategori') == $category->id ? 'checked' : '' }}
+                                            <input type="radio" name="kategori" value="{{ $category['id'] }}"
+                                                {{ request('kategori') == $category['id'] ? 'checked' : '' }}
                                                 class="w-4 h-4 border-gray-300 text-pink-600 focus:ring-pink-500">
                                             <span
-                                                class="text-sm text-gray-700 group-hover:text-gray-900">{{ $category->name }}</span>
+                                                class="text-sm text-gray-700 group-hover:text-gray-900">{{ $category['name'] }}</span>
                                         </label>
                                     @endforeach
                                 </div>
@@ -162,32 +162,32 @@
                         @foreach ($products as $product)
                             <article
                                 class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                                <a href="{{ route('product.detail', $product->id) }}">
+                                <a href="{{ route('product.detail', $product['id']) }}">
                                     <div class="aspect-4/3 overflow-hidden">
-                                        <img src="{{ asset('storage/' . $product->images->first()->image) }}"
+                                        <img src="{{ asset('storage/' . $product['productimages'][0]['image']) }}"
                                             alt="Paket Dekorasi Pelaminan Premium"
                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     </div>
                                     <div class="p-4">
                                         <div class="flex items-center gap-2 mb-2">
                                             <span
-                                                class="inline-flex items-center gap-1 text-xs font-medium {{ $product->avg_rating > 0 ? 'text-yellow-600' : 'text-gray-500' }}">
+                                                class="inline-flex items-center gap-1 text-xs font-medium {{ $product['avg_rating'] > 0 ? 'text-yellow-600' : 'text-gray-500' }}">
                                                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                                     <path
                                                         d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
                                                 </svg>
                                                 {{ number_format($product->avg_rating ?? 0, 1) }}
                                             </span>
-                                            @if ($product->total_review > 0)
-                                                <span class="text-xs text-gray-500">({{ $product->total_review }}
+                                            @if ($product['total_review'] > 0)
+                                                <span class="text-xs text-gray-500">({{ $product['total_review'] }}
                                                     ulasan)</span>
                                             @endif
                                         </div>
                                         <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2">
-                                            {{ $product->name }}</h3>
-                                        <p class="text-xs text-gray-500 mb-3">📍 {{ $product->vendor->address }}</p>
+                                            {{ $product['name'] }}</h3>
+                                        <p class="text-xs text-gray-500 mb-3">📍 {{ $product['vendor']['address'] }}</p>
                                         <div class="text-pink-600 font-bold text-base">Rp
-                                            {{ number_format($product->price, 0, ',', '.') }}</div>
+                                            {{ number_format($product['price'], 0, ',', '.') }}</div>
                                     </div>
                                 </a>
                             </article>

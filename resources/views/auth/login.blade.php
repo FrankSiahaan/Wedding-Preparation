@@ -27,8 +27,15 @@
                 <p class="text-sm text-gray-500 mt-1">Marketplace Pernikahan Terpercaya</p>
             </div>
 
+            {{-- Success Message --}}
+            @if (session('success'))
+                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p class="text-sm text-green-800">{{ session('success') }}</p>
+                </div>
+            @endif
+
             {{-- Google Login Button --}}
-            <a href="#"
+            <a href="{{ route('google.login') }}"
                 class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors mb-6">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
                     <path fill="#4285F4"

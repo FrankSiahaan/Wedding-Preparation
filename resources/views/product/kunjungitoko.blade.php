@@ -200,19 +200,19 @@
                                 @endif
                             </div>
                             <div class="p-3">
-                                @if ($product->avg_rating > 0)
-                                    <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
-                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
-                                            </svg>
-                                            {{ number_format($product->avg_rating, 1) }}
-                                        </span>
-                                        <span class="text-gray-500">({{ $product->total_review ?? 0 }} ulasan)</span>
-                                    </div>
-                                @endif
+                                <div class="flex items-center gap-2 text-[11px] text-gray-700 mb-1">
+                                    <span
+                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full {{ $product->avg_rating > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600' }}">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                            <path
+                                                d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
+                                        </svg>
+                                        {{ number_format($product->avg_rating ?? 0, 1) }}
+                                    </span>
+                                    @if ($product->total_review > 0)
+                                        <span class="text-gray-500">({{ $product->total_review }} ulasan)</span>
+                                    @endif
+                                </div>
                                 <h3 class="font-semibold text-gray-900 text-[14.5px] leading-snug line-clamp-2">
                                     {{ $product->name }}</h3>
                                 <p class="text-[11px] text-gray-500 mt-0.5">{{ $vendor->name }}</p>

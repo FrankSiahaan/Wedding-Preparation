@@ -55,7 +55,7 @@
             </div>
 
             {{-- Register Form --}}
-            <form action="#" method="POST">
+            <form action="{{ route('register.store') }}" method="POST">
                 @csrf
 
                 {{-- Nama Lengkap --}}
@@ -64,8 +64,11 @@
                         Nama Lengkap
                     </label>
                     <input type="text" id="name" name="name" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="Masukkan nama lengkap Anda" />
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent @error('name') border-red-500 @enderror"
+                        placeholder="Masukkan nama lengkap Anda" value="{{ old('name') }}" />
+                    @error('name')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Email --}}
@@ -74,8 +77,24 @@
                         Alamat Email
                     </label>
                     <input type="email" id="email" name="email" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="nama@email.com" />
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent @error('email') border-red-500 @enderror"
+                        placeholder="nama@email.com" value="{{ old('email') }}" />
+                    @error('email')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Phone (optional) --}}
+                <div class="mb-4">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Nomor Telepon (Opsional)
+                    </label>
+                    <input type="tel" id="phone" name="phone"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent @error('phone') border-red-500 @enderror"
+                        placeholder="08xxxxxxxxxx" value="{{ old('phone') }}" />
+                    @error('phone')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Password --}}
@@ -85,7 +104,7 @@
                     </label>
                     <div class="relative">
                         <input type="password" id="password" name="password" required
-                            class="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            class="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent @error('password') border-red-500 @enderror"
                             placeholder="Minimal 8 karakter" />
                         <button type="button" onclick="togglePassword('password', 'togglePasswordIcon')"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -98,6 +117,9 @@
                             </svg>
                         </button>
                     </div>
+                    @error('password')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Konfirmasi Password --}}
@@ -107,7 +129,7 @@
                     </label>
                     <div class="relative">
                         <input type="password" id="password_confirmation" name="password_confirmation" required
-                            class="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            class="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent @error('password_confirmation') border-red-500 @enderror"
                             placeholder="Masukkan password yang sama" />
                         <button type="button"
                             onclick="togglePassword('password_confirmation', 'togglePasswordConfirmIcon')"
@@ -121,13 +143,16 @@
                             </svg>
                         </button>
                     </div>
+                    @error('password_confirmation')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Terms & Conditions --}}
                 <div class="mb-6">
                     <label class="flex items-start gap-2 cursor-pointer group">
                         <input type="checkbox" name="terms" required
-                            class="mt-0.5 w-4 h-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500" />
+                            class="mt-0.5 w-4 h-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500 @error('terms') border-red-500 @enderror" />
                         <span class="text-xs text-gray-600 leading-relaxed">
                             Saya setuju dengan
                             <a href="#" class="text-pink-600 hover:text-pink-700 font-medium">Syarat &
@@ -138,6 +163,9 @@
                             WeddingMart
                         </span>
                     </label>
+                    @error('terms')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Submit Button --}}
