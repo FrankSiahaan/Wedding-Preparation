@@ -176,7 +176,7 @@
                                                     <path
                                                         d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.168L12 18.896 4.665 23.165l1.401-8.168L.132 9.21l8.2-1.192z" />
                                                 </svg>
-                                                {{ number_format($product->avg_rating ?? 0, 1) }}
+                                                {{ number_format($product['avg_rating'] ?? 0, 1) }}
                                             </span>
                                             @if ($product['total_review'] > 0)
                                                 <span class="text-xs text-gray-500">({{ $product['total_review'] }}

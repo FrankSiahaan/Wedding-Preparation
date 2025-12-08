@@ -337,7 +337,8 @@ class TransactionController extends Controller
                 ],
             ];
 
-            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+            #$paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
 
             DB::commit();
 
@@ -349,7 +350,7 @@ class TransactionController extends Controller
             // Clear checkout session data
             session()->forget(['checkout_address_id', 'checkout_type', 'checkout_items']);
 
-            return redirect($paymentUrl);
+            return view('CheckOut.payment', compact('snapToken', 'transaction'));
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Process order error: ' . $e->getMessage());
