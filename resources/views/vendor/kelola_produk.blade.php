@@ -35,31 +35,36 @@
             <nav class="p-4">
                 <ul class="space-y-2">
                     <li>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                        <a href="#"
+                            class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
                             <i class="fas fa-th-large w-5"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                        <a href="#"
+                            class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
                             <i class="fas fa-box w-5"></i>
                             <span>Produk Saya</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                        <a href="#"
+                            class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
                             <i class="fas fa-user w-5"></i>
                             <span>Profile Usaha</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                        <a href="#"
+                            class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
                             <i class="fas fa-calendar-check w-5"></i>
-                            <span>Booking Request</span>
+                            <span>Daftar Pesanan</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-lg transition">
+                        <a href="#"
+                            class="flex items-center space-x-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-lg transition">
                             <i class="fas fa-sign-out-alt w-5"></i>
                             <span>Keluar</span>
                         </a>
@@ -94,7 +99,8 @@
                     <div class="flex items-center space-x-4">
                         <button class="relative hover:scale-110 transition">
                             <i class="fas fa-bell text-gray-600 text-xl"></i>
-                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">2</span>
+                            <span
+                                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">2</span>
                         </button>
                     </div>
                 </div>
@@ -105,7 +111,8 @@
 
                 <!-- Action Button -->
                 <div class="flex justify-end mb-6">
-                    <button class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2.5 rounded-lg font-medium shadow-md transition flex items-center space-x-2">
+                    <button
+                        class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2.5 rounded-lg font-medium shadow-md transition flex items-center space-x-2">
                         <i class="fas fa-plus"></i>
                         <span>Tambah Produk</span>
                     </button>
@@ -117,16 +124,20 @@
                     <!-- Product Card 1 -->
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519167758481-83f29da8c2b6?w=400&h=300&fit=crop" alt="Grand Ballroom" class="w-full h-48 object-cover">
-                            <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
+                            <img src="https://images.unsplash.com/photo-1519167758481-83f29da8c2b6?w=400&h=300&fit=crop"
+                                alt="Grand Ballroom" class="w-full h-48 object-cover">
+                            <span
+                                class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
                         </div>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <div class="flex items-start mb-2">
                                     <i class="fas fa-home text-gray-700 text-base mr-2 mt-1"></i>
-                                    <h3 class="text-sm font-bold text-gray-900 leading-tight">Grand Ballroom Crystal Palace</h3>
+                                    <h3 class="text-sm font-bold text-gray-900 leading-tight">Grand Ballroom Crystal
+                                        Palace</h3>
                                 </div>
-                                <p class="text-sm text-gray-600 leading-relaxed h-10">Ballroom mewah dengan kapasitas 500 tamu. Dilengkapi dengan crystal...</p>
+                                <p class="text-sm text-gray-600 leading-relaxed h-10">Ballroom mewah dengan kapasitas
+                                    500 tamu. Dilengkapi dengan crystal...</p>
                             </div>
 
                             <!-- Stats -->
@@ -150,11 +161,13 @@
 
                             <!-- Action Buttons -->
                             <div class="flex space-x-3 mt-auto">
-                                <button class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
                                     <i class="fas fa-pen-to-square"></i>
                                     <span>Edit</span>
                                 </button>
-                                <button class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
                                     <i class="fas fa-trash"></i>
                                     <span>Hapus</span>
                                 </button>
@@ -166,16 +179,20 @@
                     <!-- Product Card 2 -->
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&h=300&fit=crop" alt="Garden Wedding" class="w-full h-48 object-cover">
-                            <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
+                            <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&h=300&fit=crop"
+                                alt="Garden Wedding" class="w-full h-48 object-cover">
+                            <span
+                                class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
                         </div>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <div class="flex items-start mb-2">
                                     <i class="fas fa-home text-gray-700 text-base mr-2 mt-1"></i>
-                                    <h3 class="text-sm font-bold text-gray-900 leading-tight">Garden Wedding Package Premium</h3>
+                                    <h3 class="text-sm font-bold text-gray-900 leading-tight">Garden Wedding Package
+                                        Premium</h3>
                                 </div>
-                                <p class="text-sm text-gray-600 leading-relaxed h-10">Venue outdoor dengan taman yang indah. Cocok untuk wedding intimate...</p>
+                                <p class="text-sm text-gray-600 leading-relaxed h-10">Venue outdoor dengan taman yang
+                                    indah. Cocok untuk wedding intimate...</p>
                             </div>
 
                             <!-- Stats -->
@@ -199,11 +216,13 @@
 
                             <!-- Action Buttons -->
                             <div class="flex space-x-3 mt-auto">
-                                <button class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
                                     <i class="fas fa-pen-to-square"></i>
                                     <span>Edit</span>
                                 </button>
-                                <button class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
                                     <i class="fas fa-trash"></i>
                                     <span>Hapus</span>
                                 </button>
@@ -212,10 +231,13 @@
                     </div>
 
                     <!-- Product Card 3 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
+                    <div
+                        class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=400&h=300&fit=crop" alt="Rooftop Sunset" class="w-full h-48 object-cover">
-                            <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
+                            <img src="https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=400&h=300&fit=crop"
+                                alt="Rooftop Sunset" class="w-full h-48 object-cover">
+                            <span
+                                class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
                         </div>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
@@ -223,7 +245,8 @@
                                     <i class="fas fa-home text-gray-700 text-base mr-2 mt-1"></i>
                                     <h3 class="text-sm font-bold text-gray-900 leading-tight">Rooftop Sunset Venue</h3>
                                 </div>
-                                <p class="text-sm text-gray-600 leading-relaxed h-10">Venue rooftop dengan pemandangan sunset yang mempesona, kapasitas 15...</p>
+                                <p class="text-sm text-gray-600 leading-relaxed h-10">Venue rooftop dengan pemandangan
+                                    sunset yang mempesona, kapasitas 15...</p>
                             </div>
 
                             <!-- Stats -->
@@ -247,11 +270,13 @@
 
                             <!-- Action Buttons -->
                             <div class="flex space-x-3 mt-auto">
-                                <button class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
                                     <i class="fas fa-pen-to-square"></i>
                                     <span>Edit</span>
                                 </button>
-                                <button class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
                                     <i class="fas fa-trash"></i>
                                     <span>Hapus</span>
                                 </button>
@@ -260,18 +285,23 @@
                     </div>
 
                     <!-- Product Card 4 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
+                    <div
+                        class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition flex flex-col">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop" alt="Beach Wedding" class="w-full h-48 object-cover">
-                            <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
+                            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop"
+                                alt="Beach Wedding" class="w-full h-48 object-cover">
+                            <span
+                                class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">Aktif</span>
                         </div>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <div class="flex items-start mb-2">
                                     <i class="fas fa-home text-gray-700 text-base mr-2 mt-1"></i>
-                                    <h3 class="text-sm font-bold text-gray-900 leading-tight">Beach Wedding Paradise</h3>
+                                    <h3 class="text-sm font-bold text-gray-900 leading-tight">Beach Wedding Paradise
+                                    </h3>
                                 </div>
-                                <p class="text-sm text-gray-600 leading-relaxed h-10">Venue pantai dengan pemandangan laut yang menawan. Kapasitas 200 tamu...</p>
+                                <p class="text-sm text-gray-600 leading-relaxed h-10">Venue pantai dengan pemandangan
+                                    laut yang menawan. Kapasitas 200 tamu...</p>
                             </div>
 
                             <!-- Stats -->
@@ -295,11 +325,13 @@
 
                             <!-- Action Buttons -->
                             <div class="flex space-x-3 mt-auto">
-                                <button class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-gray-300">
                                     <i class="fas fa-pen-to-square"></i>
                                     <span>Edit</span>
                                 </button>
-                                <button class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
+                                <button
+                                    class="flex-1 bg-white hover:bg-pink-50 text-pink-500 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center space-x-2 border border-pink-300">
                                     <i class="fas fa-trash"></i>
                                     <span>Hapus</span>
                                 </button>

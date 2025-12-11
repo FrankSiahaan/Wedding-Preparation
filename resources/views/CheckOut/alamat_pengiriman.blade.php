@@ -134,63 +134,12 @@
                         <h2 class="text-base font-bold text-gray-900">Alamat Pengiriman</h2>
                     </div>
 
-                    {{-- Daftar Alamat yang Tersimpan --}}
-                    @if ($addresses && $addresses->count() > 0)
-                        <div class="mb-6">
-                            <h3 class="text-sm font-semibold text-gray-900 mb-3">Pilih Alamat Tersimpan</h3>
-                            <form action="{{ route('checkout.confirmation') }}" method="POST">
-                                @csrf
-                                <div class="space-y-3">
-                                    @foreach ($addresses as $address)
-                                        <label class="block">
-                                            <input type="radio" name="address_id" value="{{ $address->id }}"
-                                                class="peer sr-only" required>
-                                            <div
-                                                class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-50 hover:border-pink-300 transition">
-                                                <div class="flex justify-between items-start">
-                                                    <div class="flex-1">
-                                                        <p class="font-semibold text-gray-900 mb-1">
-                                                            {{ $address->recipient_name }}</p>
-                                                        <p class="text-sm text-gray-600 mb-1">{{ $address->phone }}</p>
-                                                        <p class="text-sm text-gray-600">{{ $address->address }},
-                                                            {{ $address->city }}, {{ $address->province }}
-                                                            {{ $address->postal_code }}</p>
-                                                    </div>
-                                                    <svg class="w-5 h-5 text-pink-600 hidden peer-checked:block"
-                                                        fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
-
-                                <button type="submit"
-                                    class="w-full mt-6 px-6 py-3 bg-pink-600 hover:bg-pink-700 rounded-lg text-white font-semibold shadow-md transition">
-                                    Lanjut ke Konfirmasi
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="relative my-6">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-300"></div>
-                            </div>
-                            <div class="relative flex justify-center text-sm">
-                                <span class="px-4 bg-white text-gray-500">atau tambah alamat baru</span>
-                            </div>
-                        </div>
-                    @endif
-
                     {{-- Error Messages --}}
                     @if ($errors->any())
                         <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
                             <div class="flex items-start gap-3">
-                                <svg class="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -206,83 +155,138 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('checkout.confirmation') }}" method="POST">
+                    <form id="checkoutForm" action="{{ route('checkout.confirmation') }}" method="POST">
                         @csrf
 
-                        <input type="hidden" name="use_new_address" value="1">
-
-                        <!-- Nama Lengkap & Nomor Telepon -->
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
-                                <input type="text" name="recipient_name"
-                                    value="{{ old('recipient_name', auth()->user()->name) }}"
-                                    placeholder="Nama Lengkap"
-                                    class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm @error('recipient_name') ring-2 ring-red-500 @enderror"
-                                    required>
-                                @error('recipient_name')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
+                        {{-- Daftar Alamat yang Tersimpan --}}
+                        @if ($addresses && $addresses->count() > 0)
+                            <div class="mb-6">
+                                <h3 class="text-sm font-semibold text-gray-900 mb-3">Pilih Alamat Tersimpan</h3>
+                                <div class="space-y-3">
+                                    @foreach ($addresses as $address)
+                                        <label class="block">
+                                            <input type="radio" name="address_option" value="saved"
+                                                data-address-id="{{ $address->id }}"
+                                                class="peer sr-only address-option"
+                                                onchange="toggleAddressSelection(this)">
+                                            <div
+                                                class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-50 hover:border-pink-300 transition">
+                                                <div class="flex justify-between items-start">
+                                                    <div class="flex-1">
+                                                        <p class="font-semibold text-gray-900 mb-1">
+                                                            {{ $address->recipient_name }}</p>
+                                                        <p class="text-sm text-gray-600 mb-1">{{ $address->phone }}
+                                                        </p>
+                                                        <p class="text-sm text-gray-600">{{ $address->address }},
+                                                            {{ $address->city }}, {{ $address->province }}
+                                                            {{ $address->postal_code }}</p>
+                                                    </div>
+                                                    <svg class="w-5 h-5 text-pink-600 hidden peer-checked:block"
+                                                        fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon *</label>
-                                <input type="tel" name="phone" value="{{ old('phone') }}"
-                                    placeholder="08xxxxxxxxxx"
-                                    class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm @error('phone') ring-2 ring-red-500 @enderror"
-                                    required>
-                                @error('phone')
+
+                            <div class="relative my-6">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-4 bg-white text-gray-500">atau tambah alamat baru</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        <input type="hidden" name="address_id" id="selected_address_id" value="">
+                        <input type="hidden" name="use_new_address" id="use_new_address" value="0">
+
+                        <label class="block mb-4"
+                            style="{{ $addresses && $addresses->count() > 0 ? '' : 'display: none;' }}">
+                            <input type="radio" name="address_option" value="new"
+                                class="peer sr-only address-option" onchange="toggleAddressSelection(this)">
+                            <div
+                                class="border-2 border-gray-200 rounded-lg p-3 cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-50 hover:border-pink-300 transition text-center">
+                                <span class="text-sm font-semibold text-gray-700">+ Gunakan Alamat Baru</span>
+                            </div>
+                        </label>
+
+                        <div id="newAddressFields"
+                            class="{{ $addresses && $addresses->count() > 0 ? 'hidden' : '' }}" <!-- Nama Lengkap &
+                            Nomor Telepon -->
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+                                    <input type="text" name="recipient_name" id="recipient_name"
+                                        value="{{ old('recipient_name', auth()->user()->name) }}"
+                                        placeholder="Nama Lengkap"
+                                        class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm new-address-field @error('recipient_name') ring-2 ring-red-500 @enderror">
+                                    @error('recipient_name')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon *</label>
+                                    <input type="tel" name="phone" id="phone" value="{{ old('phone') }}"
+                                        placeholder="08xxxxxxxxxx"
+                                        class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm new-address-field @error('phone') ring-2 ring-red-500 @enderror">
+                                    @error('phone')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Kota, Provinsi, Kode Pos -->
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Kota *</label>
+                                    <input type="text" name="city" id="city" value="{{ old('city') }}"
+                                        placeholder="Nama Kota"
+                                        class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm new-address-field @error('city') ring-2 ring-red-500 @enderror">
+                                    @error('city')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Provinsi *</label>
+                                    <input type="text" name="province" id="province"
+                                        value="{{ old('province') }}" placeholder="Nama Provinsi"
+                                        class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm new-address-field @error('province') ring-2 ring-red-500 @enderror">
+                                    @error('province')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Kode Pos *</label>
+                                    <input type="text" name="postal_code" id="postal_code"
+                                        value="{{ old('postal_code') }}" placeholder="12345"
+                                        class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm new-address-field @error('postal_code') ring-2 ring-red-500 @enderror">
+                                    @error('postal_code')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Alamat Detail -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat Lengkap *</label>
+                                <textarea name="address" id="address" placeholder="Masukkan alamat lengkap (nama jalan, nomor rumah, RT/RW)"
+                                    rows="3"
+                                    class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm resize-none new-address-field @error('address') ring-2 ring-red-500 @enderror">{{ old('address') }}</textarea>
+                                @error('address')
                                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
 
-                        <!-- Kota, Provinsi, Kode Pos -->
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Kota *</label>
-                                <input type="text" name="city" value="{{ old('city') }}"
-                                    placeholder="Nama Kota"
-                                    class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm @error('city') ring-2 ring-red-500 @enderror"
-                                    required>
-                                @error('city')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Provinsi *</label>
-                                <input type="text" name="province" value="{{ old('province') }}"
-                                    placeholder="Nama Provinsi"
-                                    class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm @error('province') ring-2 ring-red-500 @enderror"
-                                    required>
-                                @error('province')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Kode Pos *</label>
-                                <input type="text" name="postal_code" value="{{ old('postal_code') }}"
-                                    placeholder="12345"
-                                    class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm @error('postal_code') ring-2 ring-red-500 @enderror"
-                                    required>
-                                @error('postal_code')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Alamat Detail -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat Lengkap *</label>
-                            <textarea name="address" placeholder="Masukkan alamat lengkap (nama jalan, nomor rumah, RT/RW)" rows="3"
-                                class="w-full px-4 py-2.5 bg-pink-50 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm resize-none @error('address') ring-2 ring-red-500 @enderror"
-                                required>{{ old('address') }}</textarea>
-                            @error('address')
-                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit"
+                        <!-- Submit Button - Single Button for Both Options -->
+                        <button type="submit" id="submitBtn"
                             class="w-full px-6 py-3 bg-pink-600 hover:bg-pink-700 rounded-lg text-white font-semibold shadow-md transition">
                             Lanjut ke Konfirmasi
                         </button>
@@ -353,28 +357,75 @@
     </div>
 
     <script>
-        // Debug form submission
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('form');
-            forms.forEach((form, index) => {
-                form.addEventListener('submit', function(e) {
-                    console.log(`Form ${index + 1} submitted`);
-                    console.log('Form data:', new FormData(form));
+        function toggleAddressSelection(radio) {
+            const newAddressFields = document.getElementById('newAddressFields');
+            const useNewAddress = document.getElementById('use_new_address');
+            const selectedAddressId = document.getElementById('selected_address_id');
+            const newAddressInputs = document.querySelectorAll('.new-address-field');
 
-                    // Check if all required fields are filled
-                    const requiredFields = form.querySelectorAll('[required]');
-                    let allFilled = true;
-                    requiredFields.forEach(field => {
-                        if (!field.value.trim()) {
-                            allFilled = false;
-                            console.log('Empty field:', field.name);
-                        }
-                    });
+            if (radio.value === 'saved') {
+                // Pilih alamat tersimpan
+                newAddressFields.classList.add('hidden');
+                useNewAddress.value = '0';
+                selectedAddressId.value = radio.dataset.addressId;
 
-                    if (!allFilled) {
-                        console.log('Some required fields are empty');
-                    }
+                // Remove required from new address fields
+                newAddressInputs.forEach(input => {
+                    input.removeAttribute('required');
                 });
+            } else if (radio.value === 'new') {
+                // Pilih alamat baru
+                newAddressFields.classList.remove('hidden');
+                useNewAddress.value = '1';
+                selectedAddressId.value = '';
+
+                // Add required to new address fields
+                newAddressInputs.forEach(input => {
+                    input.setAttribute('required', 'required');
+                });
+            }
+        }
+
+        // Initialize form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('checkoutForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', function(e) {
+                const addressOptions = document.querySelectorAll('input[name="address_option"]');
+                const selectedOption = Array.from(addressOptions).find(option => option.checked);
+
+                // Jika tidak ada alamat tersimpan, set default ke alamat baru
+                if (!selectedOption && addressOptions.length === 0) {
+                    document.getElementById('use_new_address').value = '1';
+                    const newAddressInputs = document.querySelectorAll('.new-address-field');
+                    newAddressInputs.forEach(input => {
+                        input.setAttribute('required', 'required');
+                    });
+                }
+
+                // Jika ada alamat tersimpan tapi tidak ada yang dipilih dan tidak ada alamat baru
+                if (addressOptions.length > 0 && !selectedOption) {
+                    e.preventDefault();
+                    alert('Silakan pilih alamat pengiriman atau isi alamat baru');
+                    return false;
+                }
+
+                // Validasi alamat baru jika dipilih
+                if (selectedOption && selectedOption.value === 'new') {
+                    const recipientName = document.getElementById('recipient_name').value.trim();
+                    const phone = document.getElementById('phone').value.trim();
+                    const city = document.getElementById('city').value.trim();
+                    const province = document.getElementById('province').value.trim();
+                    const postalCode = document.getElementById('postal_code').value.trim();
+                    const address = document.getElementById('address').value.trim();
+
+                    if (!recipientName || !phone || !city || !province || !postalCode || !address) {
+                        e.preventDefault();
+                        alert('Silakan lengkapi semua field alamat baru');
+                        return false;
+                    }
+                }
             });
         });
     </script>

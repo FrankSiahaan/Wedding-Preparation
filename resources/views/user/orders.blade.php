@@ -210,19 +210,21 @@
 
                                     @if ($transaction->oder_status == 'proses')
                                         {{-- Tandai Selesai Button --}}
-                                        <form action="{{ route('user.order.complete', $transaction->id) }}"
-                                            method="POST" class="flex-1 min-w-[140px]"
-                                            onsubmit="return confirm('Apakah Anda yakin pesanan sudah diterima?')">
+                                        <button type="button"
+                                            onclick="openCompleteModal({{ $transaction->id }}, '{{ $transaction->order_id }}')"
+                                            class="flex-1 min-w-[140px] px-4 py-2 border-2 border-green-500 text-green-600 hover:bg-green-50 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Tandai Selesai
+                                        </button>
+
+                                        <form id="complete-form-{{ $transaction->id }}"
+                                            action="{{ route('user.order.complete', $transaction->id) }}"
+                                            method="POST" class="hidden">
                                             @csrf
-                                            <button type="submit"
-                                                class="w-full px-4 py-2 border border-green-500 text-green-600 hover:bg-green-50 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                Tandai Selesai
-                                            </button>
                                         </form>
                                     @endif
 
@@ -289,3 +291,142 @@
             &copy; {{ now()->year }} WeddingMart • Marketplace Persiapan Pernikahan Terpercaya
         </div>
     </footer>
+
+    <!-- Modal Konfirmasi Tandai Selesai -->
+    <div id="completeModal" class="hidden fixed inset-0 z-[100]" style="animation: fadeIn 0.2s ease-out;">
+        <!-- Backdrop with blur -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <!-- Modal Container -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all"
+                style="animation: slideUp 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div class="p-6">
+                    <!-- Icon Success -->
+                    <div
+                        class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-5 animate-pulse">
+                        <svg class="h-12 w-12 text-green-600" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Konfirmasi Pesanan Selesai</h3>
+                        <p class="text-sm text-gray-600 mb-2">Nomor Pesanan:</p>
+                        <div class="bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-4">
+                            <p class="text-lg font-bold text-green-900" id="orderCodeToComplete"></p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                <svg class="w-5 h-5 inline-block mr-1 text-green-500" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Apakah Anda sudah menerima pesanan ini dengan baik?
+                            </p>
+                        </div>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Dengan menandai pesanan ini selesai, Anda mengkonfirmasi bahwa:<br>
+                            • Pesanan telah diterima dengan lengkap<br>
+                            • Produk sesuai dengan deskripsi<br>
+                            • Tidak ada kerusakan atau kekurangan
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-gray-50 px-6 py-5 flex gap-3 rounded-b-2xl border-t border-gray-200">
+                    <button type="button" onclick="closeCompleteModal()"
+                        class="flex-1 px-5 py-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 shadow-sm">
+                        <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Batal
+                    </button>
+                    <button type="button" onclick="confirmComplete()"
+                        class="flex-1 px-5 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 13l4 4L19 7" />
+                        </svg>
+                        Ya, Tandai Selesai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #completeModal:not(.hidden) {
+            display: block !important;
+        }
+    </style>
+
+    <script>
+        let currentCompleteId = null;
+
+        function openCompleteModal(orderId, orderCode) {
+            currentCompleteId = orderId;
+            document.getElementById('orderCodeToComplete').textContent = orderCode;
+            document.getElementById('completeModal').classList.remove('hidden');
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCompleteModal() {
+            currentCompleteId = null;
+            document.getElementById('completeModal').classList.add('hidden');
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }
+
+        function confirmComplete() {
+            if (currentCompleteId) {
+                document.getElementById('complete-form-' + currentCompleteId).submit();
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('completeModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCompleteModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCompleteModal();
+            }
+        });
+    </script>

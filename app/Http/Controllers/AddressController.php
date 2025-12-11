@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class AddressController extends Controller
 {
@@ -24,43 +25,25 @@ class AddressController extends Controller
 
     public function destroy($id)
     {
-        $user = Auth::user();
-        $address = $user->addresses()->findOrFail($id);
+        $response = Http::delete("http://api-product.test/api/address/{$id}");
 
-        // Cegah penghapusan alamat utama
-        if ($address->is_default) {
+        if ($response->successful() && $response->json('data') == 0) {
             return redirect()->route('user.addresses')->with('error', 'Alamat utama tidak dapat dihapus');
+        } elseif ($response->successful() && $response->json('data') == 1) {
+            return redirect()->route('user.addresses')->with('success', 'Alamat berhasil dihapus');
+        } else {
+            return redirect()->route('user.addresses')->with('error', 'Gagal menghapus alamat');
         }
-
-        $address->delete();
-
-        return redirect()->route('user.addresses')->with('success', 'Alamat berhasil dihapus');
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'recipient_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'street' => 'nullable|string',
-            'city' => 'required|string|max:100',
-            'province' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
-            'is_default' => 'boolean'
-        ]);
+        // $user->addresses()->create($validated);
+        $data = $request->all();
+        $data['user_id'] = Auth::id();
+        $response = Http::post('http://api-product.test/api/address', $data);
 
-        $user = Auth::user();
-
-        // Jika ini alamat pertama atau set sebagai default
-        if ($user->addresses()->count() === 0 || ($request->is_default ?? false)) {
-            $user->addresses()->update(['is_default' => false]);
-            $validated['is_default'] = true;
-        }
-
-        $user->addresses()->create($validated);
-
-        return redirect()->route('user.addresses')->with('success', 'Alamat berhasil ditambahkan');
+        return redirect()->route('user.addresses')->with('success', $response->json()['message']);
     }
 
     public function update(Request $request, $id)

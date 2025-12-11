@@ -50,6 +50,29 @@
                 <span class="font-medium text-gray-700">Log In dengan Google</span>
             </a>
 
+            {{-- Facebook Login Button --}}
+            <a href="{{ route('facebook.login') }}"
+                class="w-full flex items-center justify-center gap-2 px-2 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors mb-6">
+                <svg width="35px" height="35px" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 48 48"
+                    style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                    <title>Facebook</title>
+                    <style type="text/css">
+                        .facebook--brand {
+                            fill-rule: evenodd;
+                            clip-rule: evenodd;
+                            fill: #3D5A98;
+                        }
+                    </style>
+                    <g>
+                        <path class="facebook--brand" d="M30.1,40V27.6h4.2l0.6-4.8h-4.8v-3.1c0-1.4,0.4-2.4,2.4-2.4l2.6,0V13c-0.4-0.1-2-0.2-3.7-0.2
+    c-3.7,0-6.2,2.3-6.2,6.4v3.6h-4.2v4.8h4.2V40H30.1z M9.8,40c-1,0-1.8-0.8-1.8-1.8V9.8C8,8.8,8.8,8,9.8,8h28.5c1,0,1.8,0.8,1.8,1.8
+    v28.5c0,1-0.8,1.8-1.8,1.8H9.8z" />
+                    </g>
+                </svg>
+                <span class="font-medium text-gray-700">Log In dengan Facebook</span>
+            </a>
+
             {{-- Divider --}}
             <div class="relative my-6">
                 <div class="absolute inset-0 flex items-center">
@@ -132,6 +155,17 @@
             });
         })();
     </script>
+
+    <script>
+        if (window.location.hash && window.location.hash === '#_=_') {
+            if (history.replaceState) {
+                history.replaceState(null, null, window.location.href.split('#')[0]);
+            } else {
+                window.location.hash = '';
+            }
+        }
+    </script>
+
 </body>
 
 </html>

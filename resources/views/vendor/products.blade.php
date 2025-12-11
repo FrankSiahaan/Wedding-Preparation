@@ -67,7 +67,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
-                            <span>Booking Request</span>
+                            <span>Daftar Pesanan</span>
                         </a>
                     </li>
                     <li class="pt-2 border-t border-gray-100">
@@ -237,13 +237,15 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <a href="{{ route('vendor.products.edit', $product->id) }}"
                                                 class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                                            <form action="{{ route('vendor.products.delete', $product->id) }}"
-                                                method="POST" class="inline"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">
+                                            <button type="button"
+                                                onclick="openDeleteModal({{ $product->id }}, '{{ $product->name }}')"
+                                                class="text-red-600 hover:text-red-900">Hapus</button>
+
+                                            <form id="delete-form-{{ $product->id }}"
+                                                action="{{ route('vendor.products.delete', $product->id) }}"
+                                                method="POST" class="hidden">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-600 hover:text-red-900">Hapus</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -282,6 +284,128 @@
         </main>
 
     </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-[100]" style="animation: fadeIn 0.2s ease-out;">
+        <!-- Backdrop with blur -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <!-- Modal Container -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all"
+                style="animation: slideUp 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div class="p-6">
+                    <!-- Icon Warning -->
+                    <div
+                        class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-5 animate-pulse">
+                        <svg class="h-12 w-12 text-red-600" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Hapus Produk?</h3>
+                        <p class="text-sm text-gray-600 mb-2">Anda akan menghapus produk:</p>
+                        <div class="rounded-lg px-4 py-3 mb-4">
+                            <p class="text-lg font-bold" id="productNameToDelete"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-gray-50 px-6 py-5 flex gap-3 rounded-b-2xl border-t border-gray-200">
+                    <button type="button" onclick="closeDeleteModal()"
+                        class="flex-1 px-5 py-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 shadow-sm">
+                        <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Batal
+                    </button>
+                    <button type="button" onclick="confirmDelete()"
+                        class="flex-1 px-5 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Ya, Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #deleteModal:not(.hidden) {
+            display: block !important;
+        }
+    </style>
+
+    <script>
+        let currentDeleteId = null;
+
+        function openDeleteModal(productId, productName) {
+            currentDeleteId = productId;
+            document.getElementById('productNameToDelete').textContent = productName;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            currentDeleteId = null;
+            document.getElementById('deleteModal').classList.add('hidden');
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }
+
+        function confirmDelete() {
+            if (currentDeleteId) {
+                document.getElementById('delete-form-' + currentDeleteId).submit();
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+            }
+        });
+    </script>
 
 </body>
 

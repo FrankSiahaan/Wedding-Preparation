@@ -279,31 +279,7 @@
                                 {{ number_format($detail->price, 0, ',', '.') }}</div>
                         </div>
 
-                        {{-- Product Attributes (Dynamic) --}}
-                        @if ($detail->attributes && $detail->attributes->count() > 0)
-                            @foreach ($detail->attributes as $attribute)
-                                <div class="mb-2">
-                                    <label class="block text-[10px] font-semibold text-gray-900 mb-1">
-                                        Pilih {{ $attribute->name }} <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="attribute_{{ $attribute->id }}"
-                                        id="attribute_{{ $attribute->id }}"
-                                        class="product-attribute w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                        data-attribute-name="{{ $attribute->name }}"
-                                        data-attribute-id="{{ $attribute->id }}">
-                                        <option value="">Pilih {{ strtolower($attribute->name) }}</option>
-                                        @foreach ($attribute->values as $value)
-                                            <option value="{{ $value->id }}">{{ $value->value }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endforeach
-                            {{-- Error Message Container --}}
-                            <div id="attributeError"
-                                class="hidden mb-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1.5">
-                            </div>
-                        @else
-                            {{-- Info jika tidak ada varian --}}
+                        @if ($detail->is_active != 1)
                             <div
                                 class="mb-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
                                 <svg class="w-4 h-4 inline-block mr-1 text-gray-400" fill="none"
@@ -311,122 +287,128 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Produk ini tidak memiliki pilihan varian
+                                Produk ini sudah habis
                             </div>
+                        @else
+                            {{-- Product Attributes (Dynamic) --}}
+                            @if ($detail->attributes && $detail->attributes->count() > 0)
+                                @foreach ($detail->attributes as $attribute)
+                                    <div class="mb-2">
+                                        <label class="block text-[10px] font-semibold text-gray-900 mb-1">
+                                            Pilih {{ $attribute->name }} <span class="text-red-500">*</span>
+                                        </label>
+                                        <select name="attribute_{{ $attribute->id }}"
+                                            id="attribute_{{ $attribute->id }}"
+                                            class="product-attribute w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500"
+                                            data-attribute-name="{{ $attribute->name }}"
+                                            data-attribute-id="{{ $attribute->id }}">
+                                            <option value="">Pilih {{ strtolower($attribute->name) }}</option>
+                                            @foreach ($attribute->values as $value)
+                                                <option value="{{ $value->id }}">{{ $value->value }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endforeach
+                                {{-- Error Message Container --}}
+                                <div id="attributeError"
+                                    class="hidden mb-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1.5">
+                                </div>
+                            @else
+                                {{-- Info jika tidak ada varian --}}
+                                <div
+                                    class="mb-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                                    <svg class="w-4 h-4 inline-block mr-1 text-gray-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Produk ini tidak memiliki pilihan varian
+                                </div>
+                            @endif
                         @endif
 
                         {{-- Quantity --}}
-                        <div class="mb-2.5">
-                            <label class="block text-[10px] font-semibold text-gray-900 mb-1">Jumlah</label>
-                            <div class="flex items-center gap-2">
-                                <button id="decreaseQty" type="button"
-                                    class="w-7 h-7 rounded-lg border border-gray-300 hover:bg-gray-50 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M20 12H4" />
-                                    </svg>
-                                </button>
-                                <input type="number" id="quantityInput" value="1" min="1"
-                                    max="99"
-                                    class="w-14 text-center py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-500 text-xs">
-                                <button id="increaseQty" type="button"
-                                    class="w-7 h-7 rounded-lg border border-gray-300 hover:bg-gray-50 flex items-center justify-center transition-colors">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Action Buttons --}}
-                        @auth
-                            {{-- Form Add to Cart --}}
-                            <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $detail->id }}">
-                                <input type="hidden" name="quantity" id="quantity_hidden" value="1">
-                                {{-- Hidden inputs for selected attributes will be added dynamically --}}
-                                <div id="selectedAttributesContainer"></div>
-
-                                <button type="submit" style="display: none;" id="addToCartSubmit"></button>
-                            </form>
-
-                            {{-- Form Buy Now --}}
-                            <form action="{{ route('checkout.shipping') }}" method="GET" id="buyNowForm">
-                                <input type="hidden" name="buy_now" value="1">
-                                <input type="hidden" name="product_id" value="{{ $detail->id }}">
-                                <input type="hidden" name="quantity" id="quantity_hidden_buy" value="1">
-                                {{-- Hidden inputs for selected attributes will be added dynamically --}}
-                                <div id="selectedAttributesContainerBuy"></div>
-                            </form>
-
-                            <div class="flex gap-2 mb-2">
-                                <button type="button" onclick="buyNow()"
-                                    class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 text-xs rounded-lg transition-colors">
-                                    Beli Sekarang
-                                </button>
-                                <button type="button" onclick="addToCart()" id="addToCartBtn"
-                                    class="flex-1 bg-white border-2 border-pink-600 text-pink-600 hover:bg-pink-50 font-medium py-2 text-xs rounded-lg transition-colors flex items-center justify-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    <span id="addToCartText">Tambah ke Keranjang</span>
-                                </button>
-                            </div>
-                        @else
-                            <div class="flex gap-2 mb-2">
-                                <a href="{{ route('login') }}"
-                                    class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 text-xs rounded-lg transition-colors text-center">
-                                    Login untuk Membeli
-                                </a>
-                            </div>
-                        @endauth
-
-                        {{-- Stock Information --}}
-                        <div class="mb-2">
-                            <div class="text-xs text-gray-600">
-                                <span class="font-semibold">Stok:</span>
-                                <span class="text-gray-900">{{ $detail->stock ?? 'Tersedia' }}</span>
-                            </div>
-                        </div>
-
-                        {{-- Features Badges --}}
-                        {{-- <div class="grid grid-cols-3 gap-1.5">
-                            <div class="bg-gray-50 rounded-lg p-1.5 text-center border border-gray-200">
-                                <div class="w-5 h-5 rounded-full bg-green-50 mx-auto mb-0.5 grid place-items-center">
-                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                                        <path fill-rule="evenodd"
-                                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+                        @if ($detail->is_active == 1)
+                            <div class="mb-2.5">
+                                <label class="block text-[10px] font-semibold text-gray-900 mb-1">Jumlah</label>
+                                <div class="flex items-center gap-2">
+                                    <button id="decreaseQty" type="button"
+                                        class="w-7 h-7 rounded-lg border border-gray-300 hover:bg-gray-50 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M20 12H4" />
+                                        </svg>
+                                    </button>
+                                    <input type="number" id="quantityInput" value="1" min="1"
+                                        max="99"
+                                        class="w-14 text-center py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-500 text-xs">
+                                    <button id="increaseQty" type="button"
+                                        class="w-7 h-7 rounded-lg border border-gray-300 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <div class="text-[9px] font-medium text-gray-900 leading-tight">Garansi 30 Hari</div>
                             </div>
-                            <div class="bg-gray-50 rounded-lg p-1.5 text-center border border-gray-200">
-                                <div class="w-5 h-5 rounded-full bg-blue-50 mx-auto mb-0.5 grid place-items-center">
-                                    <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                                        <path
-                                            d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                                    </svg>
+
+                            {{-- Action Buttons --}}
+                            @auth
+                                {{-- Form Add to Cart --}}
+                                <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $detail->id }}">
+                                    <input type="hidden" name="quantity" id="quantity_hidden" value="1">
+                                    {{-- Hidden inputs for selected attributes will be added dynamically --}}
+                                    <div id="selectedAttributesContainer"></div>
+
+                                    <button type="submit" style="display: none;" id="addToCartSubmit"></button>
+                                </form>
+
+                                {{-- Form Buy Now --}}
+                                <form action="{{ route('checkout.shipping') }}" method="GET" id="buyNowForm">
+                                    <input type="hidden" name="buy_now" value="1">
+                                    <input type="hidden" name="product_id" value="{{ $detail->id }}">
+                                    <input type="hidden" name="quantity" id="quantity_hidden_buy" value="1">
+                                    {{-- Hidden inputs for selected attributes will be added dynamically --}}
+                                    <div id="selectedAttributesContainerBuy"></div>
+                                </form>
+
+                                <div class="flex gap-2 mb-2">
+                                    <button type="button" onclick="buyNow()"
+                                        class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 text-xs rounded-lg transition-colors">
+                                        Beli Sekarang
+                                    </button>
+                                    <button type="button" onclick="addToCart()" id="addToCartBtn"
+                                        class="flex-1 bg-white border-2 border-pink-600 text-pink-600 hover:bg-pink-50 font-medium py-2 text-xs rounded-lg transition-colors flex items-center justify-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        <span id="addToCartText">Tambah ke Keranjang</span>
+                                    </button>
                                 </div>
-                                <div class="text-[9px] font-medium text-gray-900 leading-tight">Free Ongkir</div>
-                            </div>
-                            <div class="bg-gray-50 rounded-lg p-1.5 text-center border border-gray-200">
-                                <div class="w-5 h-5 rounded-full bg-pink-50 mx-auto mb-0.5 grid place-items-center">
-                                    <svg class="w-3 h-3 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+                            @else
+                                <div class="flex gap-2 mb-2">
+                                    <a href="{{ route('login') }}"
+                                        class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 text-xs rounded-lg transition-colors text-center">
+                                        Login untuk Membeli
+                                    </a>
                                 </div>
-                                <div class="text-[9px] font-medium text-gray-900 leading-tight">Free Fitting 3x</div>
+                            @endauth
+
+                            {{-- Stock Information --}}
+                            <div class="mb-2">
+                                <div class="text-xs text-gray-600">
+                                    <span class="font-semibold">Stok:</span>
+                                    <span class="text-gray-900">{{ $detail->stock ?? 'Tersedia' }}</span>
+                                </div>
                             </div>
-                        </div> --}}
+                        @endif
+
                     </div>
                 </div>
             </div>
