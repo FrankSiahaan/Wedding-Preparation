@@ -40,7 +40,7 @@ class AddressController extends Controller
     {
         // $user->addresses()->create($validated);
         $data = $request->all();
-        $data['user_id'] = Auth::id();
+        // $data['user_id'] = Auth::id();
         $response = Http::post('http://api-product.test/api/address', $data);
 
         return redirect()->route('user.addresses')->with('success', $response->json()['message']);
@@ -48,20 +48,28 @@ class AddressController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'recipient_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'street' => 'nullable|string',
-            'city' => 'required|string|max:100',
-            'province' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
-        ]);
+        // $validated = $request->validate([
+        //     'recipient_name' => 'required|string|max:255',
+        //     'phone' => 'required|string|max:20',
+        //     'address' => 'required|string',
+        //     'street' => 'nullable|string',
+        //     'city' => 'required|string|max:100',
+        //     'province' => 'required|string|max:100',
+        //     'postal_code' => 'required|string|max:10',
+        // ]);
 
-        $user = Auth::user();
-        $address = $user->addresses()->findOrFail($id);
-        $address->update($validated);
+        // $user = Auth::user();
+        // $address = $user->addresses()->findOrFail($id);
+        // $address->update($validated);
 
-        return redirect()->route('user.addresses')->with('success', 'Alamat berhasil diupdate');
+        $data = $request->all();
+        $data['id'] = $id;
+        $response = Http::put("http://api-product.test/api/addresses/" . $id, $data);
+
+        if ($response->successful()) {
+            return redirect()->route('user.addresses')->with('success', $response->json()['message']);
+        }
+
+        return redirect()->route('user.addresses')->with('error', 'Gagal mengupdate alamat');
     }
 }
