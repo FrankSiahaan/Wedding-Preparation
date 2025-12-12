@@ -88,8 +88,8 @@
                         </div>
                         <div class="relative">
                             <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                                    alt="Wedding Dress" class="w-full h-80 md:h-88 object-cover">
+                                <img src="{{ asset('storage/images.jpg') }}" alt="Wedding Dress"
+                                    class="w-full h-80 md:h-88 object-cover">
                                 <div class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
                             </div>
                             <div class="absolute -top-3 -right-3 w-20 h-20 bg-pink-100 rounded-full opacity-60"></div>
@@ -145,10 +145,9 @@
                                     'color' => 'gray',
                                 ];
                             @endphp
-                            <a href="{{ route('product') }}?kategori={{ $category->id }}"
-                                class="text-center group cursor-pointer">
+                            <div class="text-center">
                                 <div
-                                    class="w-14 h-14 mx-auto mb-3 bg-{{ $iconData['color'] }}-100 rounded-full flex items-center justify-center group-hover:bg-{{ $iconData['color'] }}-200 transition-colors">
+                                    class="w-14 h-14 mx-auto mb-3 bg-{{ $iconData['color'] }}-100 rounded-full flex items-center justify-center">
                                     <svg class="w-7 h-7 text-{{ $iconData['color'] }}-600" fill="none"
                                         stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -157,7 +156,7 @@
                                 </div>
                                 <h3 class="font-semibold text-gray-900 text-sm">{{ $category->name }}</h3>
                                 <p class="text-xs text-gray-500 mt-0.5">{{ $category->products_count }}+</p>
-                            </a>
+                            </div>
                         @endforeach
                     </div>
                 </div>

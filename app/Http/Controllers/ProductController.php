@@ -30,11 +30,18 @@ class ProductController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
         // $products = $this->productRepository->getAll();
         // $categories = Category::all();
-        $response = Http::get('http://api-product.test/api/products');
+        $url = 'http://api-product.test/api/products';
+
+        // Tambahkan parameter category jika ada
+        if ($request->has('category')) {
+            $url .= '?category=' . $request->get('category');
+        }
+
+        $response = Http::get($url);
 
         // Convert array to collection of objects
         $products = $response->json()['products'];
