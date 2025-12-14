@@ -1,61 +1,175 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Tentu, ini adalah draft `README.md` yang disesuaikan khusus untuk proyek "Wedding Preparation" kamu, berdasarkan struktur file dan teknologi yang terlihat (Laravel 12, Midtrans, Socialite, Tailwind, dll.).
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Silakan buat file baru bernama `README.md` (atau timpa yang lama) dan salin konten berikut:
 
-## About Laravel
+-----
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Wedding Preparation Platform
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Aplikasi berbasis web untuk perencanaan pernikahan yang menghubungkan calon pengantin dengan vendor pernikahan. Platform ini memungkinkan pengguna untuk mencari produk/jasa, melakukan pemesanan, dan pembayaran secara online, serta memungkinkan vendor untuk mengelola produk dan pesanan mereka.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠️ Teknologi yang Digunakan
 
-## Learning Laravel
+  * **Framework Backend:** Laravel 12.x
+  * **Bahasa:** PHP ^8.2
+  * **Database:** MySQL
+  * **Frontend:** Blade Templates, Tailwind CSS
+  * **Build Tool:** Vite
+  * **Payment Gateway:** Midtrans
+  * **Autentikasi Sosial:** Laravel Socialite (Google & Facebook)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📋 Prasyarat Sistem
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Sebelum memulai, pastikan komputer kamu memiliki:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+  * [PHP](https://www.php.net/downloads) \>= 8.2
+  * [Composer](https://getcomposer.org/)
+  * [Node.js](https://nodejs.org/) & NPM
+  * [MySQL](https://www.mysql.com/) (atau MariaDB)
 
-## Laravel Sponsors
+## 🚀 Cara Install & Menjalankan Project
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di komputer lokal (localhost):
 
-### Premium Partners
+### 1\. Clone Repositori
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Clone proyek ini ke dalam folder komputer kamu:
 
-## Contributing
+```bash
+git clone https://github.com/username-kamu/wedding-preparation.git
+cd wedding-preparation
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2\. Install Dependensi PHP
 
-## Code of Conduct
+Jalankan perintah ini untuk mengunduh semua library PHP yang dibutuhkan:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+### 3\. Install Dependensi Frontend
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Install library JavaScript (Tailwind, Vite, dll):
 
-## License
+```bash
+npm install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4\. Konfigurasi Environment (.env)
+
+Salin file contoh konfigurasi `.env.example` menjadi `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Atau jika di Windows (Command Prompt):
+
+```cmd
+copy .env.example .env
+```
+
+Buka file `.env` dan sesuaikan konfigurasi berikut:
+
+  * **Database**: Sesuaikan dengan kredensial database lokal kamu.
+
+    ```ini
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=weddingpreparation  # Pastikan buat database ini di MySQL
+    DB_USERNAME=root
+    DB_PASSWORD=password_kamu
+    ```
+
+  * **Midtrans (Payment Gateway)**: Masukkan Server Key & Client Key dari dashboard Midtrans kamu.
+
+    ```ini
+    MIDTRANS_SERVER_KEY=masukkan_server_key_disini
+    MIDTRANS_CLIENT_KEY=masukkan_client_key_disini
+    MIDTRANS_IS_PRODUCTION=false
+    ```
+
+  * **Social Login (Opsional)**: Jika ingin mengaktifkan login Google/Facebook.
+
+    ```ini
+    GOOGLE_CLIENT_ID=...
+    GOOGLE_CLIENT_SECRET=...
+    FACEBOOK_CLIENT_ID=...
+    FACEBOOK_CLIENT_SECRET=...
+    ```
+
+### 5\. Generate Application Key
+
+Buat kunci enkripsi aplikasi Laravel:
+
+```bash
+php artisan key:generate
+```
+
+### 6\. Migrasi Database & Seeding
+
+Jalankan migrasi untuk membuat tabel-tabel di database. Tambahkan opsi `--seed` jika ingin mengisi data dummy awal (seperti admin atau kategori default).
+
+```bash
+php artisan migrate --seed
+```
+
+### 7\. Jalankan Project
+
+Buka dua terminal terpisah untuk menjalankan server backend dan frontend secara bersamaan.
+
+**Terminal 1 (Backend Laravel):**
+
+```bash
+php artisan serve
+```
+
+**Terminal 2 (Frontend Vite):**
+
+```bash
+npm run dev
+```
+
+Akses aplikasi di browser melalui: `http://127.0.0.1:8000`
+
+## 📖 Cara Penggunaan
+
+### Untuk Pengguna (User/Calon Pengantin)
+
+1.  **Registrasi/Login:** Buat akun baru atau login menggunakan Google/Facebook.
+2.  **Jelajahi Vendor:** Cari vendor pernikahan berdasarkan kategori.
+3.  **Pemesanan:** Pilih produk/paket, masukkan ke keranjang, dan lakukan Checkout.
+4.  **Pembayaran:** Lakukan pembayaran melalui gateway Midtrans.
+5.  **Review:** Berikan ulasan setelah pesanan selesai.
+6.  **Manajemen Profil:** Atur alamat pengiriman dan edit profil di menu User.
+
+### Untuk Vendor
+
+1.  **Daftar Vendor:** Masuk ke halaman registrasi vendor (`/auth/vendor/register`).
+2.  **Verifikasi:** Lengkapi data identitas usaha dan informasi vendor.
+3.  **Dashboard Vendor:** Kelola pesanan yang masuk (`booking request`).
+4.  **Kelola Produk:** Tambah, edit, atau hapus produk/jasa yang ditawarkan.
+
+## 📂 Struktur Folder Penting
+
+  * `app/Http/Controllers`: Logika backend (Product, Cart, Transaction, Vendor, dll).
+  * `app/Models`: Model database (User, Vendor, Product, Transaction, dll).
+  * `database/migrations`: Struktur skema database.
+  * `resources/views`: Tampilan antarmuka (Frontend Blade).
+      * `auth-vendor`: Halaman login/register khusus vendor.
+      * `CheckOut`: Proses checkout & pembayaran.
+      * `vendor`: Dashboard manajemen untuk vendor.
+
+## 🧪 Testing (Opsional)
+
+Untuk menjalankan unit test:
+
+```bash
+php artisan test
+```
+
+-----
+
+*Dibuat untuk keperluan Proyek Wedding Preparation.*

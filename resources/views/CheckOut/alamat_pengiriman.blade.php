@@ -386,33 +386,71 @@
             }
         }
 
+        // Auto-select new address when user starts typing
+        function autoSelectNewAddress() {
+            const addressOptions = document.querySelectorAll('input[name="address_option"]');
+            const newAddressRadio = Array.from(addressOptions).find(option => option.value === 'new');
+
+            if (newAddressRadio && !newAddressRadio.checked) {
+                newAddressRadio.checked = true;
+                toggleAddressSelection(newAddressRadio);
+            }
+        }
+
         // Initialize form validation
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('checkoutForm');
             const submitBtn = document.getElementById('submitBtn');
+            const newAddressInputs = document.querySelectorAll('.new-address-field');
+
+            // Auto-select "new address" when user starts typing in any field
+            newAddressInputs.forEach(input => {
+                input.addEventListener('input', autoSelectNewAddress);
+                input.addEventListener('focus', autoSelectNewAddress);
+            });
 
             form.addEventListener('submit', function(e) {
                 const addressOptions = document.querySelectorAll('input[name="address_option"]');
                 const selectedOption = Array.from(addressOptions).find(option => option.checked);
+                const newAddressFields = document.getElementById('newAddressFields');
 
                 // Jika tidak ada alamat tersimpan, set default ke alamat baru
-                if (!selectedOption && addressOptions.length === 0) {
+                if (addressOptions.length === 0) {
                     document.getElementById('use_new_address').value = '1';
-                    const newAddressInputs = document.querySelectorAll('.new-address-field');
                     newAddressInputs.forEach(input => {
                         input.setAttribute('required', 'required');
                     });
                 }
 
-                // Jika ada alamat tersimpan tapi tidak ada yang dipilih dan tidak ada alamat baru
+                // Jika ada alamat tersimpan tapi tidak ada yang dipilih
                 if (addressOptions.length > 0 && !selectedOption) {
-                    e.preventDefault();
-                    alert('Silakan pilih alamat pengiriman atau isi alamat baru');
-                    return false;
+                    // Cek apakah user sudah mengisi form alamat baru
+                    const recipientName = document.getElementById('recipient_name').value.trim();
+                    const phone = document.getElementById('phone').value.trim();
+                    const city = document.getElementById('city').value.trim();
+                    const province = document.getElementById('province').value.trim();
+                    const postalCode = document.getElementById('postal_code').value.trim();
+                    const address = document.getElementById('address').value.trim();
+
+                    // Jika user sudah mengisi form, otomatis pilih alamat baru
+                    if (recipientName || phone || city || province || postalCode || address) {
+                        const newAddressRadio = Array.from(addressOptions).find(option => option.value ===
+                            'new');
+                        if (newAddressRadio) {
+                            newAddressRadio.checked = true;
+                            toggleAddressSelection(newAddressRadio);
+                        }
+                    } else {
+                        // Jika tidak ada yang dipilih dan tidak ada yang diisi
+                        e.preventDefault();
+                        alert('Silakan pilih alamat pengiriman atau isi alamat baru');
+                        return false;
+                    }
                 }
 
                 // Validasi alamat baru jika dipilih
-                if (selectedOption && selectedOption.value === 'new') {
+                const selectedOptionFinal = Array.from(addressOptions).find(option => option.checked);
+                if (selectedOptionFinal && selectedOptionFinal.value === 'new') {
                     const recipientName = document.getElementById('recipient_name').value.trim();
                     const phone = document.getElementById('phone').value.trim();
                     const city = document.getElementById('city').value.trim();

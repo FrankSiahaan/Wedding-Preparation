@@ -18,7 +18,8 @@
                     @if ($vendor->logo)
                         <div id="logoPreview"
                             class="mx-auto h-40 w-40 rounded-2xl overflow-hidden border-4 border-pink-100 shadow-lg">
-                            <img src="{{ Storage::url($vendor->logo) }}" alt="Logo" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $vendor->logo) }}" alt="Logo"
+                                class="w-full h-full object-cover">
                         </div>
                     @else
                         <div id="logoPreview"

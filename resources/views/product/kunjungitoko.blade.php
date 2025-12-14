@@ -90,7 +90,7 @@
                     {{-- Avatar --}}
                     @if ($vendor->logo)
                         <div class="w-24 h-24 rounded-full overflow-hidden shrink-0 ring-4 ring-pink-50 shadow-md">
-                            <img src="{{ Storage::url($vendor->logo) }}" alt="{{ $vendor->name }}"
+                            <img src="{{ asset('storage/' . $vendor->logo) }}" alt="{{ $vendor->name }}"
                                 class="w-full h-full object-cover">
                         </div>
                     @else
