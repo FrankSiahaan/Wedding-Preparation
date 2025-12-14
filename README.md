@@ -17,7 +17,6 @@ Proyek ini menggunakan arsitektur **Client-Server** yang terdiri dari dua reposi
 * **Build Tool:** Vite
 * **Payment Gateway:** Midtrans
 * **Autentikasi Sosial:** Laravel Socialite (Google & Facebook)
-* **API Communication:** HTTP Client (Guzzle)
 
 ---
 
