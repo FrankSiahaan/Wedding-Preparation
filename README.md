@@ -1,9 +1,3 @@
-Tentu, ini adalah draft `README.md` yang disesuaikan khusus untuk proyek "Wedding Preparation" kamu, berdasarkan struktur file dan teknologi yang terlihat (Laravel 12, Midtrans, Socialite, Tailwind, dll.).
-
-Silakan buat file baru bernama `README.md` (atau timpa yang lama) dan salin konten berikut:
-
------
-
 # Wedding Preparation Platform
 
 Aplikasi berbasis web untuk perencanaan pernikahan yang menghubungkan calon pengantin dengan vendor pernikahan. Platform ini memungkinkan pengguna untuk mencari produk/jasa, melakukan pemesanan, dan pembayaran secara online, serta memungkinkan vendor untuk mengelola produk dan pesanan mereka.
