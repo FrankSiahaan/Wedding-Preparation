@@ -84,8 +84,6 @@ Jalankan API pada **port 8001** agar tidak bentrok dengan aplikasi utama:
 php artisan serve --port=8001
 ```
 
-> **Info:** URL API Anda sekarang aktif di `http://127.0.0.1:8001`
-
 -----
 
 ### Bagian 2: Instalasi Web App (Client)
@@ -201,18 +199,3 @@ Akses aplikasi di browser melalui: **`http://127.0.0.1:8000`**
       * `vendor`: Area dashboard vendor.
 
 -----
-
-## 🧪 Testing (Opsional)
-
-Untuk menjalankan unit testing yang tersedia:
-
-```bash
-php artisan test
-```
-
------
-
-*Dibuat untuk keperluan Proyek Wedding Preparation.*
-
-```
-```
